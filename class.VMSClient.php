@@ -187,8 +187,8 @@
 						&& ($this->config['static']['vms_auth']['secret'] == $_POST['secret'])
 						&& (in_array($_SERVER['REMOTE_ADDR'], $this->config['static']['office_ip']))
 				) {
-					$this->config['static']['dirs']['temp_storage'] = $_POST['temp_storage'];
-					$this->config['static']['dirs']['abs_img_path'] = $_POST['abs_img_path'];
+					$this->config['static']['dirs']['temp_storage'] = $this->normalize_path($_POST['temp_storage']);
+					$this->config['static']['dirs']['abs_img_path'] = $this->normalize_path($_POST['abs_img_path']);
 
 					mkdir($this->config['static']['dirs']['temp_storage'], 0774, true);
 					if (!is_writable($this->config['static']['dirs']['temp_storage'])) {
@@ -199,7 +199,7 @@
 						die($this->render('folderReadonly', array('folder_path' => $this->config['static']['dirs']['abs_img_path'])));
 					}
 
-					$this->config['static']['dirs']['rel_img_path'] = str_replace($_SERVER['DOCUMENT_ROOT'], '', $_POST['abs_img_path']);
+					$this->config['static']['dirs']['rel_img_path'] = str_replace($this->normalize_path($_SERVER['DOCUMENT_ROOT']), '', $_POST['abs_img_path']);
 					file_put_contents($config_file_abs, $this->prettyPrint(json_encode($this->config, JSON_NUMERIC_CHECK)));
 					header('Location: ' . $this->config['static']['my_listener_uri']);
 				} else {
@@ -227,7 +227,7 @@
 				die($this->render('contactAdmin', array('error' => '"Wrong VMS config:empty office ip"')));
 			}
 			if (!empty($this->config['upgradeable']['vms_listener_uri'])) {
-				$uvu = parse_url('http://'.$this->config['upgradeable']['vms_listener_uri']);
+				$uvu = parse_url('http://' . $this->config['upgradeable']['vms_listener_uri']);
 				$this->vms_ips = array_merge($this->vms_ips, gethostbynamel($uvu['host']));
 			}
 		}
@@ -278,7 +278,7 @@
 					$params['POST']['file'] = '@' . $params['upload_from'];
 				}
 
-				curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+				curl_setopt($ch, CURLOPT_TIMEOUT, 9);
 				if (!empty($params['login']) && !empty($params['password'])) {
 					curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 					curl_setopt($ch, CURLOPT_USERPWD, $params['login'] . ':' . $params['password']);
@@ -405,6 +405,11 @@
 			return $result;
 		}
 
+		public function normalize_path ($path)
+		{
+			return $this->ds . trim(str_replace(array('/', '\\'), $this->ds, $path), $this->ds);
+		}
+
 		function get_listener ($callback_function = null)
 		{ // Function for save, arguments [$material_id, $html, $user_id, $session_id, $custom_fields]
 
@@ -476,11 +481,6 @@
 			}
 		}
 
-		public function normalize_path ($path)
-		{
-			return $this->ds . trim(str_replace(array('/', '\\'), $this->ds, $path), $this->ds);
-		}
-
 		function escapeFileName ($filename)
 		{
 			return str_replace(array('\\', '..', $this->ds), '', $filename);
@@ -536,7 +536,7 @@
 					file_put_contents($this->config_abs, $this->prettyPrint(json_encode($this->config)));
 
 					$zip->setArchiveComment(json_encode($archive_params));
-					
+
 					$zip->close();
 
 					$result = array(
@@ -559,6 +559,15 @@
 			return null;
 		}
 
+		function writeLog ($name, $message)
+		{
+//			$log = fopen(__DIR__.'/log.txt', 'a');
+//			fprintf($log, "%s %s: %s\n", date('Y-m-d H:i:s'), $name.PHP_EOL, print_r($message, true).PHP_EOL.PHP_EOL.PHP_EOL);
+//			fflush($log);
+//			fclose($log);
+			return null;
+		}
+
 		function edit ($material_id, $html, $user_id, $custom_fields = null)
 		{
 
@@ -567,7 +576,7 @@
 			}
 
 			if (empty($html)) {
-				$html= $this->config['upgradeable']['default_template'];
+				$html = $this->config['upgradeable']['default_template'];
 			}
 
 			$sign = md5($html);
@@ -853,13 +862,29 @@
 			return $result;
 		}
 
-		function writeLog($name, $message) {
-//			$log = fopen(__DIR__.'/log.txt', 'a');
-//			fprintf($log, "%s %s: %s\n", date('Y-m-d H:i:s'), $name.PHP_EOL, print_r($message, true).PHP_EOL.PHP_EOL.PHP_EOL);
-//			fflush($log);
-//			fclose($log);
-			return null;
+		function make_template ($html)
+		{
+			$images = $this->get_images($html, $this->config['upgradeable']['image_parse']);
+
+			foreach ($images as $image_rel) {
+				$img_abs = str_replace($this->config['static']['dirs']['rel_img_path'], '', $this->config['static']['dirs']['abs_img_path']) . $image_rel;
+
+				if (is_readable($img_abs) && is_file($img_abs)) {
+
+					$type = pathinfo($img_abs, PATHINFO_EXTENSION);
+
+					if ($type == 'svg') {
+						$type .= '+xml';
+					}
+
+					$data = file_get_contents($img_abs);
+					$base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+					$html = str_replace($image_rel, $base64, $html);
+				}
+			}
+
+			return $html;
 		}
 	}
 
-?>
+	?>
