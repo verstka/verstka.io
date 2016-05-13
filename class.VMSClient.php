@@ -496,6 +496,12 @@
 					$archive_params = json_decode($zip->getArchiveComment(), true);
 					$html = $zip->getFromName('index.html');
 
+					$has_preview = $zip->statName('preview.png'); //preview function is only available to corporate customers on a fee basis
+					if (!empty($has_preview['index'])) {
+						@mkdir(dirname($this->normalize_path($this->config['static']['dirs']['abs_img_path']) . $this->ds . $archive_params['material_id'] . $this->ds.'preview.png'), 0777, true);
+						copy('zip://' . $zip_file_abs . '#preview.png', $this->normalize_path($this->config['static']['dirs']['abs_img_path']) . $this->ds . $archive_params['material_id'] . $this->ds.'preview.png');
+					}
+
 					foreach ($archive_params['images']['actual'] as $key => &$image) {
 
 						$image_abs = $this->normalize_path($this->config['static']['dirs']['abs_img_path']) . $this->ds . $archive_params['material_id'] . $this->ds . basename($image['zip_rel']);
