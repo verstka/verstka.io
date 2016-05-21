@@ -498,8 +498,8 @@
 
 					$has_preview = $zip->statName('preview.png'); //preview function is only available to corporate customers on a fee basis
 					if (!empty($has_preview['index'])) {
-						@mkdir(dirname($this->normalize_path($this->config['static']['dirs']['abs_img_path']) . $this->ds . $archive_params['material_id'] . $this->ds.'preview.png'), 0777, true);
-						copy('zip://' . $zip_file_abs . '#preview.png', $this->normalize_path($this->config['static']['dirs']['abs_img_path']) . $this->ds . $archive_params['material_id'] . $this->ds.'preview.png');
+						@mkdir($this->normalize_path($this->config['static']['dirs']['abs_img_path']) . $this->ds . $archive_params['material_id'] . $this->ds . '/images', 0777, true);
+						copy('zip://' . $zip_file_abs . '#preview.png', $this->normalize_path($this->config['static']['dirs']['abs_img_path']) . $this->ds . $archive_params['material_id'] . $this->ds . 'preview.png');
 					}
 
 					foreach ($archive_params['images']['actual'] as $key => &$image) {
@@ -507,7 +507,7 @@
 						$image_abs = $this->normalize_path($this->config['static']['dirs']['abs_img_path']) . $this->ds . $archive_params['material_id'] . $this->ds . basename($image['zip_rel']);
 						$image_rel = $this->normalize_path($this->config['static']['dirs']['rel_img_path']) . $this->ds . $archive_params['material_id'] . $this->ds . basename($image['zip_rel']);
 
-						if (empty($image['client_rel']) || !is_readable($image_abs)) {
+						if (empty($image['client_rel']) || !is_readable($image_abs)) { //review please: compressed image does not resize when increasing
 							$image_ext = pathinfo($image_abs, PATHINFO_EXTENSION);
 							$exif = exif_imagetype('zip://' . $zip_file_abs . '#' . $image['zip_rel']);
 							$imageinfo = getimagesize('zip://' . $zip_file_abs . '#' . $image['zip_rel']);
@@ -521,8 +521,16 @@
 								@mkdir(dirname($image_abs), 0777, true);
 								copy('zip://' . $zip_file_abs . '#' . $image['zip_rel'], $image_abs);
 								$image['client_rel'] = $image_rel;
+
+								if ($this->config['static']['images']['resize_images'] === true) {
+									if (!empty($image['width'])) {
+										$image_min_abs = str_replace('.' . $image_ext, '_small.' . $image_ext, $image_abs);
+										$this->resize($image_abs, $image_min_abs, $image['width'], $image['height']);
+									}
+								}
 							}
 						}
+						$this->writeLog('images', $archive_params['images']['actual']);
 						$this->writeLog('E before', $html);
 						$html = str_replace(trim($image['zip_rel'], '/'), $image_rel, $html);
 						$this->writeLog('E after', $html);
@@ -563,6 +571,110 @@
 				}
 			}
 			return null;
+		}
+
+		function resize ($original_image, $resized_image, $maxImageWidth = 0, $maxImageHeight = 0)
+		{
+			$image_info = getimagesize($original_image);
+			$image_type = $image_info[2];
+			$resize = !empty($this->config['static']['images']['compress_images']);
+			switch ($image_type) {
+				case IMAGETYPE_JPEG:
+					if (!empty($this->config['static']['images']['compress_images']['jpeg_compression'])) {
+						unlink($resized_image);
+						$userImage = imagecreatefromjpeg($original_image);
+					} else {
+						$resize = false;
+					}
+					break;
+
+				case IMAGETYPE_PNG:
+					if (!empty($this->config['static']['images']['compress_images']['png_compression'])) {
+						unlink($resized_image);
+						$userImage = imagecreatefrompng($original_image);
+						imagesavealpha($userImage, true);
+					} else {
+						$resize = false;
+					}
+					break;
+
+				case IMAGETYPE_GIF: //do not compress gif images
+					if (!empty($this->config['static']['images']['compress_images']['gif_compression'])) {
+						unlink($resized_image);
+						$userImage = imagecreatefromgif($original_image);
+					} else {
+						$resize = false;
+					}
+					break;
+
+				default:
+					return false;
+					break;
+			}
+
+			$userImageWidth = imageSX($userImage);
+			$userImageHeight = imageSY($userImage);
+			if (0 == $maxImageWidth) return true;
+			if (0 == $maxImageHeight) $maxImageHeight = $userImageHeight;
+
+			if ((($userImageHeight > $maxImageHeight) or ($userImageWidth > $maxImageWidth)) and $resize = true) {
+				if ($userImageHeight > $maxImageHeight) {
+					$resizeCoef = $maxImageHeight / $userImageHeight;
+					$new_height = $maxImageHeight;
+					$new_width = ($userImageWidth * $resizeCoef);
+				} else {
+					$resizeCoef = $maxImageWidth / $userImageWidth;
+					$new_width = $maxImageWidth;
+					$new_height = ($userImageHeight * $resizeCoef);
+				}
+
+				$newImage = imagecreatetruecolor($new_width, $new_height);
+
+				if ($image_type == IMAGETYPE_PNG) {
+					$background = imagecolorallocatealpha($newImage, 255, 255, 255, 127);
+					imagecolortransparent($newImage, $background);
+					imagealphablending($newImage, false);
+					imagesavealpha($newImage, true);
+				}
+
+				imagecopyresampled($newImage, $userImage, 0, 0, 0, 0, $new_width, $new_height, $userImageWidth, $userImageHeight);
+
+				switch ($image_type) {
+					case IMAGETYPE_JPEG:
+						imageinterlace($newImage, true);
+						if (!empty($this->config['static']['images']['compress_images']['jpeg_compression'])) {
+							return imagejpeg($newImage, $resized_image, $this->config['static']['images']['compress_images']['jpeg_compression']);
+						} else {
+							return imagejpeg($newImage, $resized_image);
+						}
+						break;
+
+					case IMAGETYPE_PNG:
+						if (!empty($this->config['static']['images']['compress_images']['png_compression'])) {
+							$return = imagepng($newImage, $resized_image, $this->config['static']['images']['compress_images']['png_compression']);
+						} else {
+							$return = imagepng($newImage, $resized_image);
+						}
+						if ($this->config['static']['images']['compress_images']['png_pg_quant'] === true) {
+							$temp = str_replace('.png', 'done.png', $resized_image);
+							echo shell_exec('pngquant ' . $resized_image . ' --ext done.png');
+							rename($temp, $resized_image);
+						}
+						return $return;
+						break;
+
+					case IMAGETYPE_GIF:
+						return imagegif($newImage, $resized_image);
+						break;
+				}
+			} else {
+
+				if ($this->config['static']['images']['compress_skip_type'] == 'symlink') {
+					return symlink($original_image, $resized_image);
+				} else {
+					return copy($original_image, $resized_image);
+				}
+			}
 		}
 
 		function writeLog ($name, $message)
@@ -893,4 +1005,4 @@
 		}
 	}
 
-	?>
+?>
