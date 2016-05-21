@@ -617,7 +617,7 @@
 			if (0 == $maxImageWidth) return true;
 			if (0 == $maxImageHeight) $maxImageHeight = $userImageHeight;
 
-			if ((($userImageHeight > $maxImageHeight) or ($userImageWidth > $maxImageWidth)) and $resize = true) {
+			if ((($userImageHeight > $maxImageHeight) or ($userImageWidth > $maxImageWidth)) and $resize == true) {
 				if ($userImageHeight > $maxImageHeight) {
 					$resizeCoef = $maxImageHeight / $userImageHeight;
 					$new_height = $maxImageHeight;
@@ -1005,4 +1005,4 @@
 		}
 	}
 
-?>
+	?>
