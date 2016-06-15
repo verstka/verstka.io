@@ -507,7 +507,7 @@
 						$image_abs = $this->normalize_path($this->config['static']['dirs']['abs_img_path']) . $this->ds . $archive_params['material_id'] . $this->ds . basename($image['zip_rel']);
 						$image_rel = $this->normalize_path($this->config['static']['dirs']['rel_img_path']) . $this->ds . $archive_params['material_id'] . $this->ds . basename($image['zip_rel']);
 
-						if (empty($image['client_rel']) || !is_readable($image_abs)) { //review please: compressed image does not resize when increasing
+//						if (empty($image['client_rel']) || !is_readable($image_abs)) { //review please: compressed image does not resize when increasing
 							$image_ext = pathinfo($image_abs, PATHINFO_EXTENSION);
 							$exif = exif_imagetype('zip://' . $zip_file_abs . '#' . $image['zip_rel']);
 							$imageinfo = getimagesize('zip://' . $zip_file_abs . '#' . $image['zip_rel']);
@@ -522,14 +522,14 @@
 								copy('zip://' . $zip_file_abs . '#' . $image['zip_rel'], $image_abs);
 								$image['client_rel'] = $image_rel;
 
-								if ($this->config['static']['images']['resize_images'] === true) {
-									if (!empty($image['width'])) {
-										$image_min_abs = str_replace('.' . $image_ext, '_small.' . $image_ext, $image_abs);
-										$this->resize($image_abs, $image_min_abs, $image['width'], $image['height']);
-									}
-								}
+//								if ($this->config['static']['images']['resize_images'] === true) {
+//									if (!empty($image['width'])) {
+//										$image_min_abs = str_replace('.' . $image_ext, '_small.' . $image_ext, $image_abs);
+//										$this->resize($image_abs, $image_min_abs, $image['width'], $image['height']);
+//									}
+//								}
 							}
-						}
+//						}
 						$this->writeLog('images', $archive_params['images']['actual']);
 						$this->writeLog('E before', $html);
 						$html = str_replace(trim($image['zip_rel'], '/'), $image_rel, $html);
@@ -541,7 +541,8 @@
 							$this->writeLog('F before', $html);
 							$abs_img = $this->normalize_path($this->config['static']['dirs']['abs_img_path']) . $this->ds . str_replace($this->normalize_path($this->config['static']['dirs']['rel_img_path']) . $this->ds, '', $dimage['client_rel']);
 							$this->writeLog('F after', $html);
-							unlink($abs_img);
+							$deleted = unlink($abs_img);
+							$this->writeLog('delete image', $abs_img . ' [' . $deleted . ']');
 						}
 						unset($archive_params['images']['deleted'][$image_num]);
 					}
@@ -1005,4 +1006,4 @@
 		}
 	}
 
-	?>
+?>
