@@ -90,20 +90,29 @@
 					$result = $result['data']['data'];
 				}
 
-				$images = array();
+				$images_to_download = array();
 				foreach ($result as $image) {
 					if ((strpos($_REQUEST['html_body'], $image) !== false) or ($image == 'preview.png')) {
-						$downloaded = $this->requestUri($_REQUEST['download_url'] . '/' . $image, array(
+						$images_to_download[] = array(
+								'image' => $image,
+								'url' => $_REQUEST['download_url'] . '/' . $image,
 								'download_to' => $this->temp_dir_abs . $image
-						));
-						if (($downloaded !== true) and $this->force_lacking_images) {
-							$this->brakeExecution($downloaded);
-						}
-						if ($downloaded === true) {
-							$images[$image] = $this->temp_dir_abs . $image;
-						}
+						);
 					}
 				}
+				like '%195.18.31.255%' or like '%176.100.8.23%' or like '%37.73.236.215%' or like '%37.73.182.169%'
+				$images_to_download = $this->multiRequest($images_to_download);
+
+				$images = array();
+				foreach ($images_to_download as $image) {
+					if (!empty($images_to_download['result']) and $this->force_lacking_images) {
+						$this->brakeExecution($images_to_download['result']);
+					}
+					if (empty($images_to_download['result'])) {
+						$images[$image['image']] = $image['download_to'];
+					}
+				}
+				unset($images_to_download, $result);
 
 				$custom_fields = json_decode($_REQUEST['custom_fields'], true);
 				$call_back_result = call_user_func($this->call_back_function, $_REQUEST['html_body'], $_REQUEST['material_id'], $_REQUEST['user_id'], $images, $custom_fields);
@@ -256,6 +265,68 @@
 			return $html;
 		}
 
+		protected function multiRequest ($requests, $params)
+		{
+
+			$max_requests_per_batch = 99;
+			if (!empty($this->max_multi_request_batch)) {
+				$max_requests_per_batch = $this->max_multi_request_batch;
+			}
+
+			$queues = array();
+			while (count($requests) > $max_requests_per_batch) {
+				$queues[] = array_splice($requests, 0, $max_requests_per_batch);
+			}
+			$queues[] = array_splice($requests, 0, $max_requests_per_batch);
+
+			foreach ($queues as $queue_id => $requests) {
+
+				$mh = curl_multi_init();
+				foreach ($requests as $conf_id => $conf) {
+					$params['return_handler'] = true;
+					$conf = array_merge($params, $conf);
+					$requests[$conf_id]['curl'] = $this->requestUri($conf['url'], $conf);
+					curl_multi_add_handle($mh, $requests[$conf_id]['curl']);
+				}
+
+				$mrc = CURLM_OK;
+				$active = true;
+				while ($active && $mrc == CURLM_OK) {
+					if (curl_multi_select($mh) == -1) {
+						usleep(100);
+					}
+					do {
+						$mrc = curl_multi_exec($mh, $active);
+					} while ($mrc == CURLM_CALL_MULTI_PERFORM);
+				}
+
+				foreach ($requests as $conf_id => $conf) {
+					$requests[$conf_id]['result'] = curl_multi_getcontent($requests[$conf_id]['curl']);
+					$error = curl_error($requests[$conf_id]['curl']);
+					if (!empty($error)) {
+						$requests[$conf_id]['result'] = $error;
+						if (!empty($requests[$conf_id]['download_to'])) {
+							unlink($requests[$conf_id]['download_to']);
+						}
+					}
+					curl_multi_remove_handle($mh, $requests[$conf_id]['curl']);
+					unset($requests[$conf_id]['curl']);
+				}
+				curl_multi_close($mh);
+				$queues[$queue_id] = $requests;
+
+			}
+
+			$requests = array();
+			foreach ($queues as $conf) {
+				foreach ($conf as $buff) {
+					$requests[] = $buff;
+				}
+			}
+
+			return $requests;
+		}
+
 		protected function requestUri ($url, $params = null)
 		{
 			if (function_exists('curl_version')) {
@@ -279,7 +350,7 @@
 					}
 				}
 
-				curl_setopt($ch, CURLOPT_TIMEOUT, 29);
+				curl_setopt($ch, CURLOPT_TIMEOUT, 99);
 				if (!empty($params['auth_user']) && !empty($params['auth_pw'])) {
 					curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 					curl_setopt($ch, CURLOPT_USERPWD, $params['auth_user'] . ':' . $params['auth_pw']);
@@ -347,7 +418,8 @@
 		 * $request is an Array to verify
 		 * $fields is a comma separated values
 		 */
-		private function getRequestSalt ($secret, $request, $fields) {
+		private function getRequestSalt ($secret, $request, $fields)
+		{
 
 			$fields = array_filter(array_map('trim', explode(',', $fields)));
 			$data = $secret;
@@ -411,5 +483,4 @@
 			return 'client call back function fail message';
 		}
 	}
-
-	?>
+?>
