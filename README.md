@@ -88,7 +88,7 @@ php?>
 ```
 <?php
 function save_article ($body, $material_id, $user_id, $images, $custom_fields) {
-  $material_images_dir_relative = '/upload/' . $material_id . '/';
+  $material_images_dir_relative = '/images/verstka/' . $material_id . '/';
   $material_images_dir_absolute = $_SERVER['DOCUMENT_ROOT'] . $material_images_dir_relative;
   $this->delete($material_images_dir_absolute);
   @mkdir($material_images_dir_absolute, 0777, true);
