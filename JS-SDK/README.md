@@ -66,11 +66,16 @@ JavaScript SDK взаимодействует с сервером посредс
 <script type = "text/javascript">
   window.onVMSAPIReady = function( api ) {
     api.Article.enable( {
-      mobile_max_width: [mobile_max_width]
+      [options]
     } );
   };
 </script>
 <script src="//go.verstka.io/api.js" async type="text/javascript"></script>
 ```
 
+##Параметры `options`
+Все параметры являются не обязательными
+`display_mode` – включает режим отображение статьи [desktop | mobile]
+`auto_mobile_detect` – автоматическое определение мобидьных устройство по User Agent, default: true
 `mobile_max_width` – ширина окна браузера, при которой происходит переключение между мобильной и десктопной версией статьи.
+`observe_selector` – влючает DOM Observer для селектор и реинициализурет статью при изменении DOM объекта
