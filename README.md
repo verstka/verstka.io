@@ -103,27 +103,6 @@ select vms_content from t_materials where is_vms = true and material_id = [MATER
 Далее осуществляется запроск серверу **Verstka** для создания сессии.<br>
 Запрашиваем URL этой сессии:
 
-```
-<?php
-  $result = $verstka->edit($outgoing['vms_content'], $params['material_id'], $auth['user_id'], $custom_fields);
-  
-  if (!empty($result['edit_url'])) {
-    header('Location: ' . $result['edit_url']);
-    echo '<a href="' . $result['edit_url'] . '" target="_blank">Edit ' . $result['edit_url'] . '</a>';
-  } else {
-    print_r($result);
-  }
-  
-  die;
-php?>
-```
-
-Массив `$custom_fields` может содержать дополнительные параметры, которые вы захотите использовать в будущем, например:
-
-`$custom_fileds['edit_link']` – абсолютный URL для редактирования текущей статьи
-
-`$custom_fileds['fonts.css']` – относительный путь на вашем сервере где хранится css для подключения ваших шрифтов к редактору верстка, формат такого файла описан ниже;
-
 ##Использование собственных шрифтов
 
 Нужно собрать css файл с определенными комментариями и зашитыми в base64 шрифтами и тогда они автоматически появятся в Верстке.
