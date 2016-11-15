@@ -1,4 +1,4 @@
-SDK: [JavaScript](verstka.io/JS-SDK/), [PHP](verstka.io/PHP-SDK/)
+SDK: [JavaScript](https://github.com/verstka/verstka.io/JS-SDK), [PHP](https://github.com/verstka/verstka.io/JS-SDK)
 
 #Verstka PHP SDK
 
