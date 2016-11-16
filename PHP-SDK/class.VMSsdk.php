@@ -100,7 +100,7 @@
 						);
 					}
 				}
-				like '%195.18.31.255%' or like '%176.100.8.23%' or like '%37.73.236.215%' or like '%37.73.182.169%'
+				
 				$images_to_download = $this->multiRequest($images_to_download);
 
 				$images = array();
