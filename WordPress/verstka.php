@@ -183,7 +183,7 @@
 						textarea.setAttribute( 'data-save_data', 'action=save_vms_article' );
 						textarea.setAttribute( 'data-state_change_handler', 'onStateChanged' );
 						textarea.setAttribute( 'data-is_active', '<?php echo $is_vms ? 'true' : 'false'; ?>' );
-						textarea.setAttribute( 'data-back_button_text', 'Back to wordpress editor' );
+						textarea.setAttribute( 'data-back_button_text', 'Back to default editor' );
 						textarea.value = '<?php echo urlencode( $vms_content ); ?>';
 
 						is_vms_input.name = 'is_vms';
@@ -245,7 +245,7 @@
 				};
 			</script>
 			
-			<script src = "//<?php if ( $is_dev_mode ) { echo 'dev.'; } ?>verstka.io/sdk.js"></script>
+			<script src = "//<?php echo $is_dev_mode ? 'dev' : 'go'; ?>.verstka.io/sdk.js"></script>
 			<?php
 		}
 	}
@@ -276,7 +276,7 @@
 			};
 		</script>
 		
-		<script src="//<?php if ( $is_dev_mode ) { echo 'dev.'; } ?>verstka.io/api.js" async type="text/javascript"></script>
+		<script src="//<?php echo $is_dev_mode ? 'dev' : 'go'; ?>.verstka.io/api.js" async type="text/javascript"></script>
 		
 		<style>
 			[data-vms-version="1"] {
