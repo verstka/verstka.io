@@ -7,7 +7,7 @@ JavaScript SDK взаимодействует с сервером посредс
 ###Подключение SDK
 Подключите скрипт:
 ```
-<script src="//verstka.io/sdk.js"></script>
+<script src="//go.verstka.io/sdk.js"></script>
 ```
 Данный код будет автоматически инициализирован, когда страница загрузится.
 
