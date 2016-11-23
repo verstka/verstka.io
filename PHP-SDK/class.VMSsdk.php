@@ -469,7 +469,7 @@
 
 		$body .= PHP_EOL . PHP_EOL . '<style>[data-vms-version="1"]{position: relative; margin: 0 auto;}</style>' . PHP_EOL .
 				'<script>window.onVMSAPIReady = function ( api ) {api.Article.enable();};</script>' . PHP_EOL .
-				'<script src="http://verstka.io/api.js" type="text/javascript"></script>';
+				'<script src="http://go.verstka.io/api.js" type="text/javascript"></script>';
 
 		if (file_put_contents($material_html_file_absolute, $body)) {
 
