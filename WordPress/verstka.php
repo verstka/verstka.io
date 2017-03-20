@@ -70,11 +70,9 @@
 	{
 		global $wpdb, $post; //post old state & db
 
-		$is_vms = $_REQUEST['is_vms'];
-
-		if (!empty($is_vms)) {
+		if (!empty($_REQUEST['is_vms'])) {
 			$data = array(
-					'post_isvms' => ($is_vms == 'true') ? 1 : 0
+					'post_isvms' => ($_REQUEST['is_vms'] == 'true') ? 1 : 0
 			);
 
 			$wpdb->update($wpdb->posts, $data, array('id' => $post_id));
