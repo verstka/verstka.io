@@ -80,15 +80,28 @@
 
 				set_time_limit(0);
 
-				$result['json'] = $this->requestUri($_REQUEST['download_url'], array(
+// 				//simplify here:
+// 				$result['json'] = $this->requestUri($_REQUEST['download_url'], array(
+// 						'api-key' => $this->apikey,
+// 				));
+// 				$result['data'] = json_decode($result['json'], true);
+// 				if (empty($result['data']) || $result['data']['rc'] != 1) {
+// 					$this->brakeExecution($result['json']);
+// 				} else {
+// 					$result = $result['data']['data'];
+// 				}
+// 				//end:simplify
+				
+				$result_json = $this->requestUri($_REQUEST['download_url'], array(
 						'api-key' => $this->apikey,
 				));
-				$result['data'] = json_decode($result['json'], true);
-				if (empty($result['data']) || $result['data']['rc'] != 1) {
-					$this->brakeExecution($result['json']);
+				$result_array = json_decode($result_json, true);
+				if (empty($result_array) || $result_array['rc'] != 1) {
+					$this->brakeExecution($result_array);
 				} else {
-					$result = $result['data']['data'];
+					$result = $result_array['data'];
 				}
+				unset($result_json, $result_array)
 
 				$images_to_download = array();
 				foreach ($result as $image) {
@@ -232,18 +245,33 @@
 
 		public function make_template ($html)
 		{
-			$result['json'] = $this->requestUri($this->default_vms_api_url . '/parse_images', array(
+// 			//simplify here:
+// 			$result['json'] = $this->requestUri($this->default_vms_api_url . '/parse_images', array(
+// 					'POST' => array(
+// 							'article_body' => $html
+// 					)
+// 			));
+// 			$result['data'] = json_decode($result['json'], true);
+// 			if (empty($result['data'])) {  //todo: simplify here!!
+// 				$this->brakeExecution($result['json']);
+// 			} else {
+// 				$result = $result['data']['data'];
+// 			}
+// 			//end:simplify
+			
+			$result_json = $this->requestUri($this->default_vms_api_url . '/parse_images', array(
 					'POST' => array(
 							'article_body' => $html
 					)
 			));
-			$result['data'] = json_decode($result['json'], true);
-			if (empty($result['data'])) {  //todo: simplify here!!
-				$this->brakeExecution($result['json']);
+			$result_array = json_decode($result_json, true);
+			if (empty($result_array)) {
+				$this->brakeExecution($result_json);
 			} else {
-				$result = $result['data']['data'];
+				$result = $result_array['data'];
 			}
-
+			unset($result_json, $result_array)
+			
 			foreach ($result as $image_rel) {
 
 				$image_abs = $this->web_root_abs . ltrim($image_rel, '/');
