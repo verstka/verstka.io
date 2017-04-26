@@ -15,7 +15,7 @@ SDK: [JavaScript](https://github.com/verstka/verstka.io/tree/master/JS-SDK), [PH
 
 Для редактирования статьи достаточно отправить POST запрос на URL https://verstka.io/api/open c параметрами:
 
-*  `material_id` - идентификатор материала
+*  `material_id` - идентификатор материала (обязательный уникальный не нулевой)
 *  `user_id` - идентификатор текущего пользователя
 *  `html_body` - html статьи (пустой в случае новой статьи)
 *  `api-key` - API-key, выдаваемый при подключении к Verstka SaaS API
