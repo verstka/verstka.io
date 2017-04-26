@@ -238,7 +238,7 @@
 					)
 			));
 			$result['data'] = json_decode($result['json'], true);
-			if (empty($result['data'])) {
+			if (empty($result['data'])) {  //todo: simplify here!!
 				$this->brakeExecution($result['json']);
 			} else {
 				$result = $result['data']['data'];
