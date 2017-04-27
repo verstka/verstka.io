@@ -405,6 +405,10 @@
 				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 				curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 
+				if ($params['return_handler']) {
+                    			return $ch;
+                		}
+				
 				$result = curl_exec($ch);
 
 				if (0 == curl_errno($ch)) {
