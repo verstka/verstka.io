@@ -101,7 +101,7 @@
 				} else {
 					$result = $result_array['data'];
 				}
-				unset($result_json, $result_array)
+				unset($result_json, $result_array);
 
 				$images_to_download = array();
 				foreach ($result as $image) {
@@ -270,7 +270,7 @@
 			} else {
 				$result = $result_array['data'];
 			}
-			unset($result_json, $result_array)
+			unset($result_json, $result_array);
 			
 			foreach ($result as $image_rel) {
 
