@@ -1,6 +1,7 @@
 SDK: [JavaScript](https://github.com/verstka/verstka.io/tree/master/JS-SDK), [PHP](https://github.com/verstka/verstka.io/tree/master/PHP-SDK)
 
 
+
 # Verstka API
 
 Верстка предлагает разработчикам удобный способ интеграции редактора на сайт по cредствам API
