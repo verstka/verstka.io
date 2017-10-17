@@ -1,50 +1,50 @@
 # Verstka JavaScript SDK
 
 ## Интеграция с CMS
-Статьи созданные в **Verstka**, как и обычные материалы, представляют из себя HTML-код и файлы изображений.
-JavaScript SDK взаимодействует с сервером посредством multipart/form-data.
+Статьи созданные в **Verstka** представляют из себя HTML-код и файлы изображений.
+JavaScript-SDK взаимодействует с сервером посредством multipart/form-data.
 
 ### Подключение SDK
 Подключите скрипт:
 ```
-<script src="//go.verstka.io/sdk.js"></script>
+<script src="//go.verstka.io/sdk/v2.js"></script>
 ```
-Данный код будет автоматически инициализирован, когда страница загрузится.
+SDK будет автоматически инициализирован, когда страница загрузится.
 
-### Форма
-В форму CMS необходимо добавить следующий элемент:
+### Добавление в форму
+Чтобы создать панель для редактирования материала, добавьте в форму CMS следующие элементы:
 ```
-<textarea
-  name="[name]"
-  value="[content]"
-  data-verstka_api_key="[api_key]"
-  data-images_source="[images_source]"
-  data-user_id="[user_id]"
-  data-material_id="[material_id]"
-  data-save_url="[save_url]"
-  data-save_data="[save_data]"
-  data-save_handler="[save_handler]"
-  data-state_change_handler="[state_change_handler]"
-  data-is_active="[is_active]"
-  data-back_button_text="[back_button_text]"
-></textarea>
+<xmp name="verstka" hidden>
+  {
+    'api_key': [api_key],
+    'material_id': [material_id],
+		'images_source': [images_source],
+    'materials': {
+      'desktop': [desktop],
+      'mobile': [mobile]
+    },
+    'actions': [actions]
+		'name': [name],
+		'user_id': [user_id],
+		'is_active': [is_active],
+		'mobile_mode': [mobile_mode]
+  }
+</xmp>
+
+<textarea hidden>[material_desktop]</textarea>
+<textarea hidden>[material_mobile]</textarea>
 ```
 
-В этом элементе нужно указать обязательные параметры:
-* `content` – HTML-код статьи. Равен пустой строке, если статья еще не создана
-* `verstka_api_key` – API-key, выдаваемый при подключении
-* `user_id` – идентификатор пользователя
-* `material_id` – идентификатор материала
-* `save_url` – URL на вашей стороне, на который будут посланы данные при сохранении статьи
-
-и необязательные:
-* `name` – произвольное имя данного элемента
-* `images_source` – URL на вашей стороне, относительно которого будут запрашиваться файлы изображений (по умолчанию hostname CMS)
-* `save_handler` – обработчик, который будет вызван при сохранении статьи (альтернатива [`save_url`])
-* `save_data` – дополнительные данные, которые будут посланы во время сохранения (например, "foo=1&some=2")
-* `is_active` – текущее состояние режима **Verstka**
-* `back_button_text` – надпись на кнопке отключения режима **Verstka**
-* `state_change_handler` - обработчик, вызываемый при переключении режима **Verstka**
+Элемент `xmp` содержит настройки для данного материала:
+* `api_key` – уникальный ключ, выдаваемый при интеграции.
+* `material_id` – уникальный идентификатор материала.
+* `actions` – обработчики событий.
+* `images_source` – hostname, на котором будут храниться файлы изображений. По умолчанию, совпадает с hostname CMS. Изображения в материале имеют относительный путь и будут ссылаться на данный hostname.
+* `name` – произвольное имя панели управления. Рекомендуем указывать для удобства отладки.
+* `user_id` – уникальный идентификатор текущего пользователя. Указывайте, если хотите знать, какие пользователи редактировали материал.
+* `is_active` – флаг, сообщающий о том, включена ли **Verstka** для данной страницы. Флаг используется в том случае, если CMS использует другие редакторы помимо **Verstka**.
+* `mobile_mode` – способ отображения мобильной версии.
+* `materials` – селекоторы элементов `textarea`, которые хранят содержимое статьи.
 
 Элемент `textarea` является служебным, и может быть скрыт от пользователя.<br>
 Если все параметры указаны верно, то при инициализации SDK в форме появится кнопка &laquo;**Edit with Verstka**&raquo; (сразу после элемента `textarea`).<br>
