@@ -15,20 +15,20 @@ SDK будет автоматически инициализирован, ког
 Чтобы создать панель для редактирования материала, добавьте в форму CMS следующие элементы:
 ```
 <xmp name="verstka" hidden>
-  {
-    'api_key': [api_key],
-    'material_id': [material_id],
+	{
+		'api_key': [api_key],
+		'material_id': [material_id],
 		'images_source': [images_source],
-    'materials': {
-      'desktop': [desktop],
-      'mobile': [mobile]
-    },
-    'actions': [actions]
-    'name': [name],
-    'user_id': [user_id],
-    'is_active': [is_active],
-    'mobile_mode': [mobile_mode]
-  }
+		'materials': {
+			'desktop': [desktop],
+			'mobile': [mobile]
+		},
+		'actions': [actions]
+		'name': [name],
+		'user_id': [user_id],
+		'is_active': [is_active],
+		'mobile_mode': [mobile_mode]
+	}
 </xmp>
 
 <textarea hidden>[material_desktop]</textarea>
@@ -80,6 +80,8 @@ SDK будет автоматически инициализирован, ког
 ### События `is_active` и `mobile_mode`
 `is_active` соответствует одноименному полю в настройках, то есть, сообщает активна ли **Verstka** для данной страницы.<br>
 `mobile_mode` также соответствует одноименному полю в настройках, то есть, определяет вариант отображения мобильной версии.<br>Ниже описаны варианты обработки этих событий.<br><br>
+
+#### Сохранение с помощью POST-запроса
 Изменение `mobile_mode` вызовет отправку POST-запроса на адрес `/url-for-saving-mobile-mode`. Запрос будет содержать данные, переданные в `data` и поле `my_field_name`, значение которого будет `0`, `1` или `2`:
 ```
 "actions": {
@@ -98,6 +100,8 @@ SDK будет автоматически инициализирован, ког
 	"status": 1, // 1 в случае успеха, и 0 в обратном случае.
 }
 ```
+
+#### Сохранение с помощью вызова JS-функции
 Изменение `is_active` вызовет JS-функцию `myMethodForSavingIsActive` из глобальной области видимости:
 ```
 "actions": {
@@ -128,6 +132,8 @@ function myMethodForSavingIsActive( event_name, current_value, prev_value, callb
 ### События `material_desktop` и `material_mobile`
 Эти события сигнализируют о том, что материал был сохранен.<br>
 Ниже описаны варианты обработки этих событий.<br><br>
+
+#### Сохранение с помощью POST-запроса
 Сохранение материала вызовет отправку POST-запроса на адрес `/url-for-saving-material`. В данных запроса будут содержаться данные из `data`, а также содержимое статьи **в формате `multipart/form-data`**:
 ```
 "actions": {
@@ -179,6 +185,7 @@ function saveDesktopMaterial() {
 }
 ```
 
+#### Сохранение с помощью вызова JS-функции
 Экшн в формате JS-функции `myMethodForSavingMobileMaterial`:
 ```
 "actions": {
