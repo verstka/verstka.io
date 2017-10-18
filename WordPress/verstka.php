@@ -47,13 +47,19 @@
 		global $wpdb;
 		$table_name = $wpdb->posts;
 		$column_name_isvms = "post_isvms";
-		$column_name_vms_content = "post_vms_content";
+        $column_name_vms_mobile_mode = "vms_mobile_mode";
+        $column_name_vms_content = "post_vms_content";
+        $column_name_vms_content_mobile = "post_vms_content_mobile";
 
 		$sqlQuery_add_isvms = "ALTER TABLE $table_name ADD COLUMN post_isvms BOOLEAN NOT NULL DEFAULT 0 AFTER post_date_gmt";
+        $sqlQuery_add_vms_mobile_mode = "ALTER TABLE $table_name ADD COLUMN vms_mobile_mode smallint NOT NULL DEFAULT 0 AFTER post_isvms";
 		$sqlQuery_add_vms_content = "ALTER TABLE $table_name ADD COLUMN post_vms_content longtext AFTER post_content";
+        $sqlQuery_add_vms_content_mobile = "ALTER TABLE $table_name ADD COLUMN post_vms_content_mobile longtext AFTER post_vms_content";
 
 		if (wp_maybe_add_column($table_name, $column_name_isvms, $sqlQuery_add_isvms)
+            && wp_maybe_add_column($table_name, $column_name_vms_mobile_mode, $sqlQuery_add_vms_mobile_mode)
 				&& wp_maybe_add_column($table_name, $column_name_vms_content, $sqlQuery_add_vms_content)
+                    && wp_maybe_add_column($table_name, $column_name_vms_content_mobile, $sqlQuery_add_vms_content_mobile)
 		) {
 			//колонка добавлена или уже существует :)
 		} else {
@@ -70,9 +76,11 @@
 	{
 		global $wpdb, $post; //post old state & db
 
-		if (!empty($_REQUEST['is_vms'])) {
+		$is_vms = $_REQUEST['is_vms'];
+
+		if (!empty($is_vms)) {
 			$data = array(
-					'post_isvms' => ($_REQUEST['is_vms'] == 'true') ? 1 : 0
+					'post_isvms' => ($is_vms == 'true') ? 1 : 0
 			);
 
 			$wpdb->update($wpdb->posts, $data, array('id' => $post_id));
@@ -127,11 +135,94 @@
 		}
 		
 		echo json_encode(array(
+            'status' => 1,
 			'content' => $source
 		), JSON_NUMERIC_CHECK);
 
 //		echo formJSON(1, 'saved', array('body' => $source));
 		wp_die();
+	}
+
+	/*
+		Обрабатывает аякс на сохранение VMS-статьи (мобильная версия)
+	*/
+
+	add_action('wp_ajax_save_vms_article_mobile', 'save_vms_article_mobile');
+	function save_vms_article_mobile ()
+	{
+		$ds = DIRECTORY_SEPARATOR;
+		$uload_dir_rel = wp_upload_dir();
+		$uload_dir_rel = parse_url($uload_dir_rel['baseurl']);
+		$uload_dir_rel = $uload_dir_rel['path'];
+		$uload_dir_abs = (substr(ABSPATH, -1) == "/" ? substr(ABSPATH, 0, -1) : ABSPATH) . $ds . 'wp-content' . $ds . 'uploads' . $ds . 'vms' . $ds;
+
+		$uploaded = array();
+
+		@mkdir($uload_dir_abs . $_POST['material_id'] . '_m', 0777, true);
+
+		foreach ($_FILES as $file_name => $file_data) {
+
+			if ($file_name == 'index_html') {
+				$source = file_get_contents($file_data['tmp_name']);
+				continue;
+			}
+			if ($file_name == 'custom_fields_json') {
+				$custom_fields = file_get_contents($file_data['tmp_name']);
+				continue;
+			}
+
+			$file_name = strrev(implode(strrev('.'), explode(strrev('_'), strrev($file_name), 2)));
+
+			$upd = move_uploaded_file($file_data['tmp_name'], $uload_dir_abs . $_POST['material_id'] . '_m' . $ds . $file_name);
+			$uploaded[$file_name] = $upd;
+		}
+
+
+		$source = str_replace('/vms_images/', $uload_dir_rel . '/vms/' . $_POST['material_id'] . '_m' . '/', $source);
+
+		$data = array(
+				'post_isvms' => 1,
+				'post_vms_content_mobile' => $source
+		);
+		global $wpdb;
+		$rew = $wpdb->update($wpdb->posts, $data, array('id' => $_POST['material_id']));
+		if (function_exists('wp_cache_clear_cache')) {
+			wp_cache_clear_cache();
+		}
+
+		echo json_encode(array(
+            'status' => 1,
+			'content' => $source
+		), JSON_NUMERIC_CHECK);
+
+//		echo formJSON(1, 'saved', array('body' => $source));
+		wp_die();
+	}
+
+    add_action('wp_ajax_save_vms_article_mode', 'save_vms_article_mode');
+    function save_vms_article_mode ()
+	{
+		global $wpdb, $post; //post old state & db
+		
+		$vms_mobile_mode = (string) $_REQUEST['vms_mobile_mode'];
+        $post_id = (integer) $_REQUEST['material_id'];
+
+		if (!empty($vms_mobile_mode) || $vms_mobile_mode === '0') {
+			$data = array(
+					'vms_mobile_mode' => intval($vms_mobile_mode)
+			);
+
+			$wpdb->update($wpdb->posts, $data, array('id' => $post_id));
+			
+            echo json_encode(array(
+                'status' => 1
+            ), JSON_NUMERIC_CHECK);
+		} else {
+            echo json_encode(array(
+                'status' => 0
+            ), JSON_NUMERIC_CHECK);
+        }
+        wp_die();
 	}
 
 //	function formJSON ($res_code, $res_msg, $data = array())
@@ -152,139 +243,184 @@
 	{
 		$post = get_post();
 		if (is_object($post)) {
-			$is_vms = $post->post_isvms;
 			$vms_content = $post->post_vms_content;
 			$is_dev_mode = get_option( 'dev_mode' ) ? true : false;
 			
 			?>
 			<script>
-				//turns on console messages
-				window.Verstka_debug = true;
-
-				//called before SDK inited
-				window.Verstka_beforeInit = function () {
-					var post_body_content = document.getElementById('post-body-content'),
-						post_title = document.getElementById('titlediv'),
-						textarea = document.createElement('textarea'),
-						is_vms_input = document.createElement( 'input' );
-
-					if ( post_body_content && ( <?php echo get_option( 'api_key' ) ? 1 : 0; ?> == 1 ) ) {
-						textarea.name = 'verstka_content';
-//						textarea.type = 'text';
-						textarea.style.display = 'none';
-						textarea.setAttribute( 'data-verstka_api_key', '<?php echo get_option( 'api_key' ); ?>' );
-						textarea.setAttribute( 'data-images_source', '<?php echo get_option( 'images_source' ); ?>' );
-						textarea.setAttribute( 'data-user_id', '<?php echo $post->post_author; ?>' );
-						textarea.setAttribute( 'data-material_id', '<?php echo $post->ID; ?>' );
-//						textarea.setAttribute( 'data-save_handler', 'onArticleChanged' );
-						textarea.setAttribute( 'data-save_url', window.ajaxurl );
-						textarea.setAttribute( 'data-save_data', 'action=save_vms_article' );
-						textarea.setAttribute( 'data-state_change_handler', 'onStateChanged' );
-						textarea.setAttribute( 'data-is_active', '<?php echo $is_vms ? 'true' : 'false'; ?>' );
-						textarea.setAttribute( 'data-back_button_text', 'Back to default editor' );
-						textarea.value = '<?php echo urlencode( $vms_content ); ?>';
-
-						is_vms_input.name = 'is_vms';
-						is_vms_input.type = 'text';
-						is_vms_input.id = 'verstka_is_vms';
-						is_vms_input.value = '<?php echo $is_vms ? 'true' : 'false'; ?>';
-						is_vms_input.style.display = 'none';
-
-						post_title.parentNode.insertBefore( textarea, post_title.nextSibling );
-						post_title.parentNode.insertBefore( is_vms_input, post_title.nextSibling );
-					}
-				};
-
-				//called when toggle Verstka or default editor (true if verstka)
-				window.onStateChanged = function( state ) {
-					document.getElementById( 'postdivrich' ).style.display = state ? 'none' : 'block';
-					document.getElementById( 'verstka_is_vms' ).value = state ? 'true' : 'false';
-
-					if ( state !== true ) {
-						window.dispatchEvent( new Event( 'resize' ) );
-					}
-				};
-
-				//called when article changed
-				window.onArticleChanged = function (form_data, callback) {
-					var request;
-
-					if (window.ajaxurl) {
-						request = new XMLHttpRequest();
-
-						request.open('POST', window.ajaxurl, true);
-
-						request.onload = function () {
-							var result;
-						
-							if (request.status >= 200 && request.status < 400) {
-								result = JSON.parse(request.responseText);
-								
-								if ( result && result.content ) {
-									callback && callback( result );
-								} else {
-									callback && callback(false, 'invalid response data');
+				
+				window.VerstkaSDK_beforeInit = function(util) {
+					
+					var settings = {
+						'api_key': '<?php echo get_option( 'api_key' ); ?>',
+						'images_source': '<?php echo get_option( 'images_source' ); ?>',
+						'name': 'wp_<?php echo $post->ID; ?>',
+						'user_id': '<?php echo $post->post_author; ?>',
+						'material_id': '<?php echo $post->ID; ?>',
+						'is_active': <?php echo $post->post_isvms ? 1 : 0; ?> == 1,
+						'mobile_mode': '<?php echo $post->vms_mobile_mode; ?>', //0=none, 1=auto, 2=custom
+						'materials': {
+							'desktop': '#verstka_desktop',
+							'mobile': '#verstka_mobile'
+						},
+						'actions': {
+							'material_desktop': {
+								'ajax': {
+									'url': window.ajaxurl,
+									'data': {
+										'action': 'save_vms_article'
+									}
 								}
-							} else {
-								callback && callback(false, 'invalid response status');
+							},
+							'material_mobile': {
+								'ajax': {
+									'url': window.ajaxurl,
+									'data': {
+										'action': 'save_vms_article_mobile'
+									}
+								}
+							},
+							'mobile_mode': {
+								'ajax': {
+									'url': window.ajaxurl,
+									'data': {
+										'action': 'save_vms_article_mode'
+									},
+									'value_as': 'vms_mobile_mode'
+								}
+							},
+							'is_active': {
+								'method': 'verstkaActionHandler'
+							}
+						}
+					};
+					
+					var xmp = util.parseHtml('<xmp name="verstka" hidden>' + JSON.stringify(settings) + '</xmp>');
+					
+					var textarea_desktop = util.parseHtml('<textarea id="verstka_desktop" hidden><?php echo urlencode( $post->post_vms_content); ?></textarea>');
+					
+					var textarea_mobile = util.parseHtml('<textarea id="verstka_mobile" hidden><?php echo urlencode( $post->post_vms_content_mobile); ?></textarea>');
+					
+					var post_title;
+					
+					var is_vms_input = util.parseHtml( '<input type="text" name="is_vms" hidden/>' );
+					
+					if (document.getElementById('post-body-content') !== null) {
+					
+						post_title = document.getElementById('titlediv');
+						
+						util.after( post_title, xmp );
+						util.after( post_title, textarea_desktop );
+						util.after( post_title, textarea_mobile );
+						util.after( post_title, is_vms_input );
+						
+						window.verstka_interface = {
+							elements: {
+								xmp: xmp,
+								textarea_desktop: textarea_desktop,
+								textarea_mobile: textarea_mobile,
+								is_vms_input: is_vms_input,
+								default_editor: util.find('#postdivrich')
 							}
 						};
-
-						request.onerror = function () {
-							callback && callback(false, 'POST error');
-						};
-
-						form_data.append('action', 'save_vms_article');
-
-						request.send(form_data);
-					} else {
-						callback(false, 'WP AJAX URL is not defined');
+						
 					}
+					
 				};
+				
+				window.verstkaActionHandler = function(action, current, prev, callback) {
+				
+					switch (action) {
+						case 'is_active':
+							verstka_interface.elements.default_editor.style.display = current ? 'none' : 'block';
+							verstka_interface.elements.is_vms_input.value = current ? 'true' : 'false';
+							
+							if ( !current ) {
+								// Fixes default editor
+								window.dispatchEvent( new Event( 'resize' ) );
+							}
+							
+							callback( { status: 1 } );
+							
+							break;
+					}
+				
+				};
+				
 			</script>
 			
-			<script src = "//<?php echo $is_dev_mode ? 'dev' : 'go'; ?>.verstka.io/sdk.js"></script>
+			<script src = "//<?php echo $is_dev_mode ? 'dev' : 'go'; ?>.verstka.io/sdk/v2.js"></script>
 			<?php
 		}
 	}
 
-	add_filter('the_content', 'apply_vms_content', 1);
-	function apply_vms_content ($content)
-	{
-		$post = get_post();
-		
-		if ( ($post->post_isvms == 1) && ($content == $post->post_content) ) {
-			$content = $post->post_vms_content;
-		}
-		
-		return $content;
-	}
+    add_filter('the_content', 'apply_vms_content', 1);
+    function apply_vms_content ($content)
+    {
+        $post = get_post();
+
+        if ( ($post->post_isvms == 1) && ($content == $post->post_content) ) {
+            if (wp_is_mobile() && ($post->vms_mobile_mode == 2) && !empty($post->post_vms_content_mobile)) {
+                   $content = $post->post_vms_content_mobile;
+               } else {
+                   $content = $post->post_vms_content;
+               }
+           }
+           
+        remove_filter( 'the_content', 'wpautop' );
+        remove_filter( 'the_excerpt', 'wpautop' );
+        remove_filter( 'the_content', 'wptexturize' );
+
+        return $content;
+    }
 
 	add_action('wp_head', 'add_this_script_footer');
 	function add_this_script_footer ()
 	{ 
-		$is_dev_mode = get_option( 'dev_mode' ) ? true : false
+		$is_dev_mode = get_option( 'dev_mode' ) ? true : false;
+		
+		$post = get_post();
+		
 		?>
-	
-		<script type = "text/javascript">
-			window.onVMSAPIReady = function (api) {
-				api.Article.enable({
-					mobile_max_width: 767
-				});
-			};
-		</script>
+			
+			<?php if ($post->vms_mobile_mode == 0 || $post->vms_mobile_mode == 2) {  // Mobile: off || custom ?>
+			
+				<script type = "text/javascript">
+					window.onVMSAPIReady = function (api) {
+						api.Article.enable({
+							display_mode: 'desktop'
+						});
+					};
+				</script>
+				
+			<?php } ?>
+			
+			<?php if ($post->vms_mobile_mode == 1) {  // Mobile: auto ?>
+			
+				<script type = "text/javascript">
+					window.onVMSAPIReady = function (api) {
+						api.Article.enable({
+							auto_mobile_detect: true,
+							mobile_max_width: 767
+						});
+					};
+				</script>
+				
+			<?php } ?>
+			
+			<script src="//<?php echo $is_dev_mode ? 'dev' : 'go'; ?>.verstka.io/api.js" async type="text/javascript"></script>
+			
+			<style>
+				[data-vms-version="1"] {
+					visibility: hidden;
+				}
+				[data-vms-version="1"].body--inited {
+					visibility: visible;
+				}
+			</style>
 		
-		<script src="//<?php echo $is_dev_mode ? 'dev' : 'go'; ?>.verstka.io/api.js" async type="text/javascript"></script>
-		
-		<style>
-			[data-vms-version="1"] {
-				visibility: hidden;
-			}
-			[data-vms-version="1"].body--inited {
-				visibility: visible;
-			}
-		</style>
 		<?php
+		
 	}
 
 //	add_filter('manage_edit-post_columns', 'add_is_vms_column', 4);
