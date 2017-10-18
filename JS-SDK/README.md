@@ -1,4 +1,4 @@
-# Verstka JavaScript SDK
+# Verstka JavaScript-SDK
 
   * [Интеграция с CMS](#Интеграция-с-cms)
     * [Подключение SDK](#Подключение-sdk)
