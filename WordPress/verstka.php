@@ -383,9 +383,10 @@
 		
 		?>
 			
-			<?php if ($post->vms_mobile_mode == 0 || $post->vms_mobile_mode == 2) {  // Mobile: off || custom ?>
+			<?php if ($post->vms_mobile_mode == 0) {  // Mobile: off ?>
 			
-				<script type = "text/javascript">
+				<meta name="viewport" content="width=1200, initial-scale=1">	
+				<script type="text/javascript">
 					window.onVMSAPIReady = function (api) {
 						api.Article.enable({
 							display_mode: 'desktop'
@@ -396,8 +397,9 @@
 			<?php } ?>
 			
 			<?php if ($post->vms_mobile_mode == 1) {  // Mobile: auto ?>
-			
-				<script type = "text/javascript">
+				
+				<meta name="viewport" content="width=device-width, initial-scale=1">
+				<script type="text/javascript">
 					window.onVMSAPIReady = function (api) {
 						api.Article.enable({
 							auto_mobile_detect: true,
@@ -407,6 +409,20 @@
 				</script>
 				
 			<?php } ?>
+			
+			<?php if ($post->vms_mobile_mode == 2) {  // Mobile: custom ?>
+			
+				<meta name="viewport" content="width=device-width, initial-scale=1">
+				<script type="text/javascript">
+					window.onVMSAPIReady = function (api) {
+						api.Article.enable({
+							display_mode: 'desktop'
+						});
+					};
+				</script>
+				
+			<?php } ?>
+			
 			
 			<script src="//<?php echo $is_dev_mode ? 'dev' : 'go'; ?>.verstka.io/api.js" async type="text/javascript"></script>
 			
