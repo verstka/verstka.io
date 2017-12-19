@@ -166,4 +166,21 @@ php?>
 }
 ```
 
+## Подключение через composer
 
+### composer.json
+
+```
+{
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/verstka/verstka.io",
+      "path": "/PHP-SDK"
+    }
+  ],
+  "require": {
+    "verstka/php-sdk": "dev-master"
+  }
+}
+```
