@@ -114,23 +114,4 @@ md5 от сконкатенированных параметров в следу
 }
 ```
 
-## Подключение через composer
-
-### composer.json
-
-```
-{
-  "repositories": [
-    {
-      "type": "git",
-      "url": "https://github.com/verstka/verstka.io",
-      "path": "/PHP-SDK"
-    }
-  ],
-  "require": {
-    "verstka/php-sdk": "dev-master"
-  }
-}
-```
-
 
