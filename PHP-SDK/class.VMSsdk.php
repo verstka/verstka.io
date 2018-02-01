@@ -293,7 +293,7 @@
 			return $html;
 		}
 
-		protected function multiRequest ($requests, $params)
+		protected function multiRequest ($requests, $params = [])
 		{
 
 			$max_requests_per_batch = 99;
@@ -355,7 +355,7 @@
 			return $requests;
 		}
 
-		protected function requestUri ($url, $params = null)
+		protected function requestUri ($url, $params = [])
 		{
 			if (function_exists('curl_version')) {
 
@@ -374,7 +374,12 @@
 					}
 					foreach ($params['upload_from'] as $local_file) {
 						$local_file = pathinfo($local_file);
-						$params['POST'][$local_file['basename']] = '@' . $local_file['dirname'] . $this->ds . $local_file['basename'];
+						
+						if (function_exists('curl_file_create')) { // php 5.6+
+							$params['POST'][$local_file['basename']] = curl_file_create($local_file['dirname'] . $this->ds . $local_file['basename'], '', $local_file['basename']);
+						} else {
+							$params['POST'][$local_file['basename']] = '@' . $local_file['dirname'] . $this->ds . $local_file['basename'];
+						}
 					}
 				}
 
