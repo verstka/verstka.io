@@ -293,7 +293,7 @@
 			return $html;
 		}
 
-		protected function multiRequest ($requests, $params)
+		protected function multiRequest ($requests, $params = [])
 		{
 
 			$max_requests_per_batch = 99;
