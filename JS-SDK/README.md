@@ -193,6 +193,8 @@ function saveDesktopMaterial() {
 		$images[$file_name] = $file_data;
 	}
 	
+	$html = str_replace('/vms_images/', '/relative_path_to_uploads/' . $_POST['material_id'] . '/', $html);
+	
         // ...
 	// Код, сохраняющий содержимое статьи.
 	// ...
