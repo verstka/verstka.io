@@ -23,7 +23,7 @@
 ```
 <?php
   include __DIR__.'/vendor/vms/class.VMSsdk.php';
-  $verstka = new \devnow\VMSsdk($apikey, $secret, $call_back_url, $call_back_function, $temp_dir_abs, $web_root_abs);
+  $verstka = new \devnow\VMSsdk($apikey, $secret, $call_back_url, $call_back_function, $temp_dir_abs, $web_root_abs, $static_host_name);
 php?>
 ```
 * Значения `$apikey` и `$secret` выдаются клиенту при интеграции.
@@ -31,6 +31,8 @@ php?>
 * `$call_back_function` – функция для сохранения материала в БД и перемещения изображений из временной директории в папку изображений на вашем сайте
 * `$temp_dir_abs` – абсолютный путь на файловой системе сервера для хранения временных файлов при работе с редактором
 * `$web_root_abs` – абсолютный путь на файловой системе сервера где расположена корневая папка сайта
+* `$static_host_name` – опционально host на котором верстка будет искать изображения с относительными путями при открытии статьи на редактирование. Желательно использовать урлы картинок с абсолютными путями (заменять '/vms_images/' в html статьи при сохранении на 'https://static.yourserver.com/path/to/your/article/images/' например)
+
 
 Данный код осуществляет:
 * скачивание изображений в директорию временных файлов `$temp_dir_abs`
