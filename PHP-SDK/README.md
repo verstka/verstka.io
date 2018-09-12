@@ -8,7 +8,8 @@
 Для хранения статей можно использовать текущую таблицу, содержащую материалы.
 Для этого в нее необходимо добавить следующие поля:
 *  `is_vms:boolean` – флаг, по которому можно определить сделана ли статья с помощью **Verstka**
-*  `vms_source:text` – тело статьи
+*  `vms_source_desktop:text` – тело статьи
+*  `vms_source_mobile:text` – тело статьи
 
 ### Подготовка структуры папок
 В HTML-коде статьи будут содержаться ссылки на изображения, хранящиеся на вашем сервере.
@@ -52,16 +53,16 @@ php?>
 После этого необходимо запросить из БД текущий HTML статьи.<br>
 Например, запрос может выглядеть так:
 ```
-select vms_content from t_materials where is_vms = true and material_id = [MATERIAL_ID]
+select vms_source_desktop from t_materials where is_vms = true and material_id = [MATERIAL_ID]
 ```
 
 ### Получение ссылки на редактирование
-Далее осуществляется запроск серверу **Verstka** для создания сессии.<br>
+Далее осуществляется запрос к серверу **Verstka** для создания сессии.<br>
 Запрашиваем URL этой сессии:
 
 ```
 <?php
-  $result = $verstka->edit($outgoing['vms_content'], $params['material_id'], $auth['user_id'], $custom_fields);
+  $result = $verstka->edit($outgoing['vms_source_desktop'], $params['material_id'], $auth['user_id'], $custom_fields);
   
   if (!empty($result['edit_url'])) {
     header('Location: ' . $result['edit_url']);
