@@ -20,7 +20,7 @@
 		private $call_back_url;
 		private $call_back_function;
 		private $ds = DIRECTORY_SEPARATOR;
-		private $force_lacking_images = false;
+		private $force_lacking_images = true;
 
 		//$image_dir, $call_user_func, $temp_dir
 
@@ -97,7 +97,7 @@
 				));
 				$result_array = json_decode($result_json, true);
 				if (empty($result_array) || $result_array['rc'] != 1) {
-					$this->brakeExecution($result_array);
+					$this->brakeExecution($result_json);
 				} else {
 					$result = $result_array['data'];
 				}
@@ -196,34 +196,49 @@
 			if ($result['rc'] == 1) {
 				if (!empty($result['data']['upload_url']) and !empty($result['data']['lacking_pictures'])) {
 
-					$will_upload = array();
-					$missing_files = array();
+				    if (!empty($custom_fields['article_images_abs'])) {
 
-					foreach ($result['data']['lacking_pictures'] as $lacking_image) {
-						$lacking_image_abs = $this->web_root_abs . ltrim($lacking_image, '/');
+				        /*
+				         * IMPORTANT! Editor can request any file from this folder if this parameter exist!
+				         */
+                        $custom_fields['article_images_abs'] = $this->ds . trim($custom_fields['article_images_abs'], $this->ds) . $this->ds;
 
-						if (is_readable($lacking_image_abs)) {
-							$will_upload[] = $lacking_image_abs;
-						} else {
-							$missing_files[] = $lacking_image_abs;
-						}
-					}
+                        $will_upload = array();
+                        $missing_files = array();
 
-					if (!empty($will_upload)) {
+                        foreach ($result['data']['lacking_pictures'] as $lacking_image_file => $lacking_image_rel) {
 
-						$upload_result['json'] = $this->requestUri($result['data']['upload_url'], array(
-								'api-key' => $this->apikey,
-								'upload_from' => $will_upload
-						));
+                            /*
+                             * Because of the attacks of paranoia
+                             */
 
-						$upload_result['data'] = json_decode($upload_result['json'], true);
+                            $lacking_image_file = pathinfo($lacking_image_file, PATHINFO_BASENAME); // Because of the attacks of paranoia
 
-						if (empty($upload_result['data'])) {
-							$this->brakeExecution($upload_result['json']);
-						} else {
-							$upload_result = $upload_result['data'];
-						}
-					}
+                            $lacking_image_abs = $custom_fields['article_images_abs'] . $lacking_image_file;
+
+                            if (is_readable($lacking_image_abs)) {
+                                $will_upload[] = $lacking_image_abs;
+                            } else {
+                                $missing_files[] = $lacking_image_abs;
+                            }
+                        }
+
+                        if (!empty($will_upload)) {
+
+                            $upload_result['json'] = $this->requestUri($result['data']['upload_url'], array(
+                                'api-key' => $this->apikey,
+                                'upload_from' => $will_upload
+                            ));
+
+                            $upload_result['data'] = json_decode($upload_result['json'], true);
+
+                            if (empty($upload_result['data'])) {
+                                $this->brakeExecution($upload_result['json']);
+                            } else {
+                                $upload_result = $upload_result['data'];
+                            }
+                        }
+                    }
 
 					if ($this->force_lacking_images && !empty($missing_files)) {
 						$this->brakeExecution('missing ' . print_r($missing_files, true) . ' in ' . $material_id);
@@ -506,7 +521,7 @@
 
 		$body .= PHP_EOL . PHP_EOL . '<style>[data-vms-version="1"]{position: relative; margin: 0 auto;}</style>' . PHP_EOL .
 				'<script>window.onVMSAPIReady = function ( api ) {api.Article.enable();};</script>' . PHP_EOL .
-				'<script src="http://go.verstka.io/api.js" type="text/javascript"></script>';
+				'<script src="https://go.verstka.io/api.js" type="text/javascript"></script>';
 
 		if (file_put_contents($material_html_file_absolute, $body)) {
 
