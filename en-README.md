@@ -4,7 +4,7 @@ SDK: [JavaScript] (https://github.com/verstka/verstka.io/tree/master/JS-SDK), [P
 
 # Verstka API
 
-Layout offers developers a convenient way to integrate the editor into the site via an API.
+Verstka offers developers a convenient way to integrate the editor into the site via an API.
 
 The format of the returned data (except for downloading files) is JSON, and will have the following fields:
 
