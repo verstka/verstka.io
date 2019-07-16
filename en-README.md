@@ -21,7 +21,7 @@ To edit an article, just send a POST request to the URL https://verstka.io/api/o
 * `html_body` - html article (empty in the case of a new article)
 * `api-key` - API-key, issued when connecting to the Verstka SaaS API
 * `callback_url` - the URL to which the request will come when saving the article in the editor
-* `host_name` - from this host the editor will try to download images of the article (if `html_body` contains images)
+* `host_name` - from this host the editor will try to download images of the article (if `html_body` contains images and they have relative addresses)
 * `user_ip` - IP address of the current user (additional security level when opening the editor)
 * `callback_sign` - md5 from the concatenated parameters in the following order: secret, api-key, material_id, user_id, callback_url
 * `custom_fields` - an array of additional parameters in JSON format to enable additional editor features
