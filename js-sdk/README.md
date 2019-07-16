@@ -1,37 +1,37 @@
 # Verstka JavaScript-SDK
 
-  * [Интеграция с CMS](#Интеграция-с-cms)
-    * [Подключение SDK](#Подключение-sdk)
-    * [Добавление в форму](#Добавление-в-форму)
-    
-  * [Взаимодействие CMS с редактором](#Взаимодействие-cms-с-редактором)
-  
-    * [События is_active и mobile_mode](#События-is_active-и-mobile_mode)
-    
-      * [Сохранение с помощью POST-запроса](#Сохранение-с-помощью-post-запроса)
-      * [Сохранение с помощью вызова JS-функции](#Сохранение-с-помощью-вызова-js-функции)
-      
-    * [События material_desktop и material_mobile](#События-material_desktop-и-material_mobile)
-    
-      * [Сохранение с помощью POST-запроса](#Сохранение-с-помощью-post-запроса-1)
-      * [Сохранение с помощью вызова JS-функции](#Сохранение-с-помощью-вызова-js-функции-1)
-      
-  * [Отображение статей](#Отображение-статей)
-    * [Параметры options](#Параметры-options)
+  * [Integration with CMS](#Integration-with-cms)
+    * [Connect SDK](#connect-sdk)
+    * [Add to form](#Add-on-form)
+    
+  * [CMS interaction with editor](#Interaction-cms-with-editor)
+  
+    * [Events is_active and mobile_mode](#Events-is_active-and-mobile_mode)
+    
+      * [Saving using a POST request](#Saving-using-post-request)
+      * [Saving using a JS function call](#Saving-using-calling-js-functions)
+      
+    * [Material_desktop and material_mobile events](#Events-material_desktop-and-material_mobile)
+    
+      * [Saving using a POST request](#Saving-using-post-request-1)
+      * [Saving using a JS function call](#Saving-using-calling-js-function-1)
+      
+  * [Display articles](#Display-articles)
+    * [Options options](#options-options)
 
-## Интеграция с CMS
-Статьи созданные в **Verstka** представляют из себя HTML-код и файлы изображений.<br>
-JavaScript-SDK взаимодействует с CMS посредством POST-запросов и/или вызова локальных JavaScript-функций.
+## CMS Integration
+Articles created in **Verstka** are HTML code and image files. <br>
+JavaScript-SDK interacts with CMS by means of POST requests and/or calling local JavaScript functions.
 
-### Подключение SDK
-Подключите скрипт:
+### SDK connection
+Connect the script:
 ```
 <script src="//go.verstka.io/sdk/v2.js"></script>
 ```
-SDK будет автоматически инициализирован, когда страница загрузится.
+The SDK will be automatically initialized when the page loads.
 
-### Добавление в форму
-Чтобы создать панель для редактирования материала, добавьте в форму CMS следующие элементы:
+### Adding to the form
+To create a panel for editing the material, add the following elements to the CMS form:
 ```
 <xmp name="verstka" hidden>
 	{
@@ -54,27 +54,27 @@ SDK будет автоматически инициализирован, ког
 <textarea hidden>[material_mobile]</textarea>
 ```
 
-Элемент `xmp` содержит настройки для данного материала.
-* `api_key` – уникальный ключ, выдаваемый при интеграции.
-* `material_id` – уникальный идентификатор материала.
-* `actions` – обработчики событий, о которых будет сказано [ниже](#Взаимодействие-cms-с-редактором-verstka).
-* `images_source` – hostname, на котором будут храниться файлы изображений. По умолчанию, совпадает с hostname CMS. Изображения в материале имеют относительный путь и будут ссылаться на данный hostname.
-* `name` – произвольное имя панели управления. Рекомендуем указывать для удобства отладки.
-* `user_id` – уникальный идентификатор текущего пользователя. Указывайте, если хотите знать, какие пользователи редактировали материал.
-* `is_active` – флаг, сообщающий о том, включена ли **Verstka** для данной страницы. Флаг используется в том случае, если CMS использует другие редакторы помимо **Verstka**.
-* `mobile_mode` – способ отображения мобильной версии. `0` - отображать десктопную версию, `1` – автоматически конвертировать десктопную версию в мобильную, `2` – отображать отдельный материал в мобильной версии.
-* `materials` – селекоторы элементов `textarea`, которые содержат HTML статьи.
+The element `xmp` contains settings for this material.
+* `api_key` is a unique key issued during integration.
+* `material_id` - unique identifier of the material.
+* `actions` - event handlers that will be discussed [below] (# Interaction-cms-with-editor-verstka).
+* `images_source` - the hostname on which image files will be stored. The default is the same as the CMS hostname. Images in the material have a relative path and will refer to the given hostname.
+* `name` - arbitrary name of the control panel. We recommend to specify for ease of debugging.
+* `user_id` - unique identifier of the current user. Specify if you want to know which users edited the material.
+* `is_active` - a flag indicating whether ** Verstka ** is enabled for this page. The flag is used if CMS uses other editors besides ** Verstka **.
+* `mobile_mode` - a way to display the mobile version. `0` - display the desktop version,` 1` - automatically convert the desktop version to the mobile version, `2` - display a separate material in the mobile version.
+* `materials` - selectors of` textarea` elements that contain HTML articles.
 
-Элементы `textarea` содержат HTML статьи.
-* `material_desktop` - HTML десктопной версии.
-* `material_mobile` - HTML мобильной версии. Указывается только если вы хотите отображать отдельный материал в мобильной версии, чему соответсвует значение `mobile_mode: 2`.
+The `textarea` elements contain HTML articles.
+* `material_desktop` - HTML desktop version.
+* `material_mobile` - HTML mobile version. It is specified only if you want to display a separate material in the mobile version, which corresponds to the value `mobile_mode: 2`.
 
-Если все параметры указаны верно, то после инициализации SDK в форме появится панель &laquo;**Verstka**&raquo;.<br>
+If all the parameters are specified correctly, then after initializing the SDK, a panel will appear in the form of the & laquo; **Verstka**&raquo;. <br>
 
-## Взаимодействие CMS с редактором
-Все взаимодействия между CMS и редактором происходят по правилам, описанным в поле `actions`.<br>
-Редактор генерирует события. `actions` содержит инструкции о том, как ваша CMS будет обрабатывать то или иное событие.
-Каждая такая инструкция – экшн – работает в одном из двух режимов. Экшн либо отсылает POST-запрос по заданному URL, либо вызывает JS-функцию из глобальной области видимости:
+## CMS interaction with editor
+All interactions between the CMS and the editor occur according to the rules described in the `actions` field. <br>
+The editor generates events. `actions` contains instructions on how your CMS will handle this or that event.
+Each such instruction - action - works in one of two modes. The action either sends a POST request to the specified URL, or calls the JS function from the global scope:
 ```
 `actions`: {
 	'<имя_события>': {
@@ -85,7 +85,7 @@ SDK будет автоматически инициализирован, ког
 	}
 }
 ```
-или
+or
 ```
 `actions`: {
 	'<имя_события>': {
@@ -93,15 +93,14 @@ SDK будет автоматически инициализирован, ког
 	}
 }
 ```
+The editor generates four events.
 
-Редактор генерирует четыре события.
+### Events is_active` and `mobile_mode`
+`is_active` corresponds to the field of the same name in the settings, that is, whether it says ** Verstka ** is active for this page. <br>
+`mobile_mode` also corresponds to the field of the same name in the settings, that is, it defines the option of displaying the mobile version. The options for handling these events are described below.
 
-### События `is_active` и `mobile_mode`
-`is_active` соответствует одноименному полю в настройках, то есть, сообщает активна ли **Verstka** для данной страницы.<br>
-`mobile_mode` также соответствует одноименному полю в настройках, то есть, определяет вариант отображения мобильной версии.<br>Ниже описаны варианты обработки этих событий.<br>
-
-#### Сохранение с помощью POST-запроса
-Изменение `mobile_mode` вызовет отправку POST-запроса на адрес `/url-for-saving-mobile-mode`. Запрос будет содержать данные, переданные в `data` и поле `my_field_name`, значение которого будет `0`, `1` или `2`:
+#### Saving using a POST request
+Changing `mobile_mode` will cause a POST request to be sent to` / url-for-saving-mobile-mode`. The request will contain data passed to `data` and the field` my_field_name`, whose value will be `0`,` 1` or `2`:
 ```
 "actions": {
 	"is_active": {
@@ -113,15 +112,15 @@ SDK будет автоматически инициализирован, ког
 	}
 }
 ```
-Ответ на этот запрос должен иметь следующий вид:
+The response to this request should be as follows:
 ```
 {
 	"status": 1, // 1 в случае успеха, и 0 в обратном случае.
 }
 ```
 
-#### Сохранение с помощью вызова JS-функции
-Изменение `is_active` вызовет JS-функцию `myMethodForSavingIsActive` из глобальной области видимости:
+#### Saving using a JS function call
+Changing `is_active` will call the JS function` myMethodForSavingIsActive` from the global scope:
 ```
 "actions": {
 	"is_active": {
@@ -129,18 +128,18 @@ SDK будет автоматически инициализирован, ког
 	}
 }
 ```
-В указаную функцию будут переданы аргументы:
-* `event_name` – название события, в данном случае, `is_active`;
-* `current_value` – текущее значение, в данном случае, `0` или `1`;
-* `prev_value` – предыдущее значение;
-* `callback` – коллбэк, который нужно вызвать как `callback({status: 1})`, если ваша функция успешно сработала, и `callback({status: 0})` в противном случае.
-Функция должна иметь следующий вид:
+Arguments will be passed to the specified function:
+* `event_name` - the name of the event, in this case,` is_active`;
+* `current_value` - the current value, in this case,` 0` or `1`;
+* `prev_value` - previous value;
+* `callback` is the callback that you want to call as` callback ({status: 1}) `if your function worked successfully, and` callback ({status: 0}) `otherwise.
+The function should have the following form:
 ```
 function myMethodForSavingIsActive( event_name, current_value, prev_value, callback ) {
 
-	//...код, с помощью которого сохраняется значение поля "is_active".
+	//...code with which the value of the "is_active" field is saved.
 	
-	if (/* если метод успешно сработал */) {
+	if (/* if the method worked successfully */) {
 		callback({status: 1});
 	} else {
 		callback({status: 0});
@@ -148,12 +147,12 @@ function myMethodForSavingIsActive( event_name, current_value, prev_value, callb
 }
 ```
 
-### События `material_desktop` и `material_mobile`
-Эти события сигнализируют о том, что материал был сохранен.<br>
-Ниже описаны варианты обработки этих событий.<br>
+### Events of `material_desktop` and` material_mobile`
+These events signal that the material has been saved. <br>
+The options for handling these events are described below. <br>
 
-#### Сохранение с помощью POST-запроса
-Сохранение материала вызовет отправку POST-запроса на адрес `/url-for-saving-desktop-material`. В данных запроса будут содержаться данные из `data`, а также содержимое статьи **в формате `multipart/form-data`**:
+#### Saving using a POST request
+Saving the material will cause a POST request to be sent to the address `/url-for-saving-desktop-material`. The request data will contain data from `data`, as well as the contents of the article **in the format` multipart/form-data`**:
 ```
 "actions": {
 	"is_active": {
@@ -164,14 +163,14 @@ function myMethodForSavingIsActive( event_name, current_value, prev_value, callb
 	}
 }
 ```
-Ответ на этот запрос должен иметь следующий вид:
+The response to this request should be as follows:
 ```
 {
-	"status": 1, // 1 в случае успеха, и 0 в обратном случае.
-	"content": "..." // HTML сохраненного материала.
+	"status": 1, // 1 if successful, and 0 otherwise.
+	"content": "..." // HTML of saved material.
 }
 ```
-Пример обработки этого запроса на PHP. Описанная функция выделяет `$html` - HTML статьи, `$custom_fields_json` - JSON с дополнительными данными и `$images` – массив с изображениями.
+An example of processing this request for PHP. The described function selects `$html` - HTML articles,` $custom_fields_json` - JSON with additional data and `$images` - an array with images.
 ```
 function saveDesktopMaterial() {
 	$html = '';
@@ -196,7 +195,7 @@ function saveDesktopMaterial() {
 	$html = str_replace('/vms_images/', '/relative_path_to_uploads/' . $_POST['material_id'] . '/', $html);
 	
         // ...
-	// Код, сохраняющий содержимое статьи.
+	// The code that stores the contents of the article.
 	// ...
 	
 	return encode_json( [
@@ -206,8 +205,8 @@ function saveDesktopMaterial() {
 }
 ```
 
-#### Сохранение с помощью вызова JS-функции
-Экшн в формате JS-функции `myMethodForSavingMobileMaterial`:
+#### Saving using a JS function call
+Action in JS format `myMethodForSavingMobileMaterial`:
 ```
 "actions": {
 	"is_active": {
@@ -215,12 +214,12 @@ function saveDesktopMaterial() {
 	}
 }
 ```
-В указаную функцию будут переданы аргументы:
-* `event_name` – название события, в данном случае, `material_mobile`;
-* `current_value` – содержимое статьи в формате `FormData`;
-* `prev_value` – всегда null;
-* `callback` – коллбэк, который нужно вызвать как `callback({status: 1, content: "<HTML_ сохраненного материала>"})`, если ваша функция успешно сработала, и `callback({status: 0})` в противном случае.
-Функция должна иметь следующий вид:
+Arguments will be passed to the specified function:
+* `event_name` - the name of the event, in this case,`material_mobile`;
+* `current_value` - the contents of the article in the format` FormData`;
+* `prev_value` is always null;
+* `callback` - a callback that you want to call as` callback ({status: 1, content: "<HTML_ saved material>"}) `, if your function has worked successfully, and` callback ({status: 0}) `in otherwise.
+The function should have the following form:
 ```
 function myMethodForSavingMobileMaterial( event_name, current_value, prev_value, callback ) {
 	
@@ -247,10 +246,10 @@ function myMethodForSavingMobileMaterial( event_name, current_value, prev_value,
 	}
 
 	// ...
-	// Код, сохраняющий содержимое статьи.
+	// The code that stores the contents of the article.
 	// ...
 	
-	if (/* если метод успешно сработал */) {
+	if (/* if the method worked successfully */) {
 		callback({status: 1, content: html});
 	} else {
 		callback({status: 0});
@@ -258,8 +257,8 @@ function myMethodForSavingMobileMaterial( event_name, current_value, prev_value,
 }
 ```
 
-## Отображение статей
-Вывод HTML-кода статьи должен сопровождаться подключением скрипта:
+## Displaying Articles
+The HTML code of the article should be accompanied by the connection of the script:
 
 ```
 <script type = "text/javascript">
@@ -272,9 +271,9 @@ function myMethodForSavingMobileMaterial( event_name, current_value, prev_value,
 <script src="//go.verstka.io/api.js" async type="text/javascript"></script>
 ```
 
-### Параметры `options`
-Все параметры являются необязательными
-* `display_mode` – переключает между режимами отображения статьи (`desktop` или `mobile`). Default: `desktop`;
-* `auto_mobile_detect` – автоматическое определение мобильных устройств по User Agent. Default: `true`;
-* `mobile_max_width` – ширина окна браузера, при которой происходит переключение между мобильной и десктопной версией статьи;
-* `observe_selector` – селекторы DOM-элементов, которые потенциально могут изменить положение статьи. Например, здесь указывается селектор баннера, расхлапывающегося над статьей.
+### Options `options`
+All parameters are optional.
+* `display_mode` - switches between article display modes (` desktop` or `mobile`). Default: `desktop`;
+* `auto_mobile_detect` - automatic detection of mobile devices by User Agent. Default: `true`;
+* `mobile_max_width` - the width of the browser window, at which the switching between mobile and desktop version of the article takes place;
+* `observe_selector` - selectors of DOM elements that can potentially change the position of the article. For example, here is indicated the selector of a banner rapping over an article.
