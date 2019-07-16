@@ -21,7 +21,7 @@ To edit an article, just send a POST request to the URL https://verstka.io/api/o
 * `html_body` - html article (empty in the case of a new article)
 * `api-key` - API-key, issued when connecting to the Verstka SaaS API
 * `callback_url` - the URL to which the request will come when saving the article in the editor
-* `host_name` - from this host the editor will try to download images of the article (if `html_body` contains images and they have relative uri)
+* `host_name` - from this host the editor will try to download images of the article (if` html_body` contains images)
 * `user_ip` - IP address of the current user (additional security level when opening the editor)
 * `callback_sign` - md5 from the concatenated parameters in the following order: secret, api-key, material_id, user_id, callback_url
 * `custom_fields` - an array of additional parameters in JSON format to enable additional editor features
@@ -41,7 +41,7 @@ Also in the answer will be additional fields:
 
 * `last_save` - the last time the article was saved (in case the article was recently edited)
 * `contents` - the URL to get the content of the editing session (required only for integration without` callback_url`)
-* `client_folder` - the calculated relative URL to the static content of the article on` host_name` (for debug)
+* `client_folder` - the calculated relative URL to the static content of the article on `host_name` (for debug)
 
 If the editor fails to download some images of the article, the following additional parameters will be returned:
 
@@ -119,13 +119,13 @@ The HTML code of the article should be accompanied by the connection of the scri
 
 ```
 <script type = "text / javascript">
-window.onVMSAPIReady = function (api) {
-api.Article.enable ({
-<options>
-     });
-   };
-</ script>
-<script src = "// go.verstka.io/api.js" async type = "text / javascript"> </ script>
+    window.onVMSAPIReady = function (api) {
+        api.Article.enable ({
+            <options>
+        });
+    };
+</script>
+<script src="//go.verstka.io/api.js" async type="text/javascript"></script>
 ```
 
 ### Options `options`
