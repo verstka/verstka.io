@@ -1,79 +1,78 @@
-SDK: [JavaScript](https://github.com/verstka/verstka.io/tree/master/JS-SDK), [PHP](https://github.com/verstka/verstka.io/tree/master/PHP-SDK)
+SDK: [JavaScript] (https://github.com/verstka/verstka.io/tree/master/JS-SDK), [PHP] (https://github.com/verstka/verstka.io/tree/master / PHP-SDK)
 
 
 
 # Verstka API
 
-Верстка предлагает разработчикам удобный способ интеграции редактора на сайт посредством API
+Verstka offers developers a convenient way to integrate the editor into the site via an API.
 
-Формат возвращаемых данных (кроме скачивания файлов) – JSON, и будет иметь следующие поля:
+The format of the returned data (except for downloading files) is JSON, and will have the following fields:
 
-*  `rc` - код результата выполнения (1 - для успешных запросов)
-*  `rm` - сообщение в текстовом виде
-*  `data` - массив возвращаемых данных
+* `rc` - result result code (1 - for successful queries)
+* `rm` - message in text form
+* `data` - array of returned data
 
-## Редактирование статьи
+## Editing an article
 
-Для редактирования статьи достаточно отправить POST-запрос на URL https://verstka.io/api/open c параметрами:
+To edit an article, just send a POST request to the URL https://verstka.io/api/open with parameters:
 
-*  `material_id` - идентификатор материала (обязательный уникальный не нулевой, при верстке отдельной мобильной версии используйте префикс 'M' в этом поле)
-*  `user_id` - идентификатор текущего пользователя
-*  `html_body` - html статьи (пустой в случае новой статьи)
-*  `api-key` - API-key, выдаваемый при подключении к Verstka SaaS API
-*  `callback_url` - URL-адрес, на который придет запрос при сохранении статьи в редакторе
-*  `host_name` - с этого хоста редактор попытается скачать изображения статьи (если `html_body` содержит изображения и они имеют относительные адреса)
-*  `user_ip` - IP-адрес текущего пользователя (дополнительный уровень безопасности при открытии редактора)
-*  `callback_sign` - md5 от сконкатенированных параметров в следующем порядке: secret, api-key, material_id, user_id, callback_url
-*  `custom_fields` - массив дополнительных параметров в формате JSON для включения дополнительных функций редактора
+* `material_id` - material identifier (mandatory unique non-zero, when typesetting a separate mobile version, use the prefix 'M' in this field)
+* `user_id` - current user ID
+* `html_body` - html article (empty in the case of a new article)
+* `api-key` - API-key, issued when connecting to the Verstka SaaS API
+* `callback_url` - the URL to which the request will come when saving the article in the editor
+* `host_name` - from this host the editor will try to download images of the article (if `html_body` contains images and they have relative addresses)
+* `user_ip` - IP address of the current user (additional security level when opening the editor)
+* `callback_sign` - md5 from the concatenated parameters in the following order: secret, api-key, material_id, user_id, callback_url
+* `custom_fields` - an array of additional parameters in JSON format to enable additional editor features
 
-Возможные ключи массива `custom_fields`:
+Possible keys for the `custom_fields` array:
 
-*  `auth_user` и `auth_pw` - если `host_name` закрыт с помощью http-авторизации
-*  `fonts.css` - относительный путь до CSS-файла со шрифтами для подключения к редактору (описан ниже)
-*  любые дополнительные данные (будут возвращены при сохранении статьи в неизменном виде)
+* `auth_user` and `auth_pw` - if `host_name` is closed using http authorization
+* `fonts.css` - relative path to the CSS file with fonts to connect to the editor (described below)
+* any additional data (will be returned when the article is saved unchanged)
 
-В ответ Verstka API вернет в виде JSON следующие поля данных:
+In response, the Verstka API will return the following data fields as JSON:
 
-*  `session_id` - уникальный идентификатор сессии редактирования
-*  `edit_url` - URL страницы редактора для этой сессии
+* `session_id` - unique identifier of the editing session
+* `edit_url` - the URL of the editor page for this session
 
-Также в ответе будут дополнительные поля:
+Also in the answer will be additional fields:
 
-*  `last_save` - время последнего сохранения статьи (в случае если статья недавно редактировалась)
-*  `contents` - URL для получения содержимого сессии редактирования (необходим только для интеграции без `callback_url`)
-*  `client_folder` - вычисленный относительный URL до статического контента статьи на `host_name` (для debug)
+* `last_save` - the last time the article was saved (in case the article was recently edited)
+* `contents` - the URL to get the content of the editing session (required only for integration without `callback_url`)
+* `client_folder` - the calculated relative URL to the static content of the article on `host_name` (for debug)
 
-В случае если редактору не удастся скачать некоторые изображения статьи, вернутся следующие дополнительные параметры:
+If the editor fails to download some images of the article, the following additional parameters will be returned:
 
-*  `lacking_pictures` - список недостающих изображений
-*  `upload_url` - URL для загрузки посредством POST multipart/form-data
+* `lacking_pictures` - list of missing images
+* `upload_url` - URL to upload via POST multipart / form-data
 
+# Saving an article
 
-# Сохранение статьи
+Saving an article is available within 48 hours from the last interaction (opening or previous saving) of this article.
 
-Сохранение статьи доступно в течение 48 часов с последнего взаимодействия (открытия или предыдущего сохранения) этой статьи
+When the user clicks the save button in the editor, the `callback_url` will be requested and the following parameters are transferred using POST:
 
-При нажатии пользователем кнопки "сохранить" в редакторе будет запрошен `callback_url` и с помощью POST переданы следующие параметры:
+* `material_id` - identifier of the stored material
+* `user_id` - current user ID
+* `session_id` - unique identifier of the editing session
+* `html_body` - html of the saved article
+* `download_url` - URL for downloading static content
+* `custom_fields` - JSON with additional fields passed when opening the editor
+* `callback_sign` - digital signature of the request, generated by the following algorithm:
 
-*  `material_id` - идентификатор сохраняемого материала
-*  `user_id` - идентификатор текущего пользователя
-*  `session_id` - уникальный идентификатор сессии редактирования
-*  `html_body` - html сохраняемой статьи
-*  `download_url` - URL для скачивания статического контента
-*  `custom_fields` - JSON с дополнительными полями, переданными при открытии редактора
-*  `callback_sign` - цифорвая подпись запроса, генерируемая по следующему алгоритму:
+md5 from the concatenated parameters in the following order: secret, session_id, user_id, material_id, download_url, where
+`secret` - the key issued when connecting to the Verstka SaaS API
 
-md5 от сконкатенированных параметров в следующем порядке: secret, session_id, user_id, material_id, download_url, где
-`secret` - ключ, выдаваемый при подключении к Verstka SaaS API
+Images of the article are available at `download_url` (returns a list) and` download_url` / `name` (returns a file),
+where `name` is the name of the file to download.
 
-Изображения статьи доступны по адресу `download_url` (возвращает список) и `download_url`/`name` (возвращает файл),
-где `name` - имя файла для скачивания.
+## Use your own fonts
 
-## Использование собственных шрифтов
+You need to collect a CSS file with certain comments and fonts sewn into base64, and then they will automatically appear in the Layout.
 
-Нужно собрать CSS-файл с определенными комментариями и зашитыми в base64 шрифтами, и тогда они автоматически появятся в Верстке.
-
-Вверху CSS-файла нужно в комментах указать дефолтный шрифт, который будет выставляться при создании нового текстового объекта.
+At the top of the CSS file you need to specify the default font in the comments, which will be set when creating a new text object.
 ```
 /* default_font_family: 'formular'; */
 /* default_font_weight: 400; */
@@ -81,61 +80,58 @@ md5 от сконкатенированных параметров в следу
 /* default_line_height: 24px; */
 ```
 
-Далее, для каждого `@font-face` нужно прописать комментарии с названием шрифта и его начертанием
+Further, for each `@ font-face` it is necessary to register comments with the name of the font and its style.
 ```
-  /* font_name: 'Formular'; */
-  /* font_style_name: 'Light'; */
+   /* font_name: 'Formular'; */
+   /* font_style_name: 'Light'; */
 ```
 
-Итоговый CSS-файл:
+Final CSS file:
 ```
 /* default_font_family: 'formular'; */
 /* default_font_weight: 400; */
 /* default_font_size: 16px; */
 /* default_line_height: 24px; */
 
-@font-face {
-  /* font_name: 'Formular'; */
-  /* font_style_name: 'Light'; */
-   font-family: 'formular';
-   src: url(data:application/font-woff2;charset=utf-8;base64,KJHGKJHGJHG) format('woff2'),
-        url(data:application/font-woff;charset=utf-8;base64,KJHGKJHGJHG) format('woff');
-   font-weight: 300;
-   font-style: normal;
+@ font-face {
+   /* font_name: 'Formular'; */
+   /* font_style_name: 'Light'; */
+    font-family: 'formular';
+    src: url (data: application / font-woff2; charset = utf-8; base64, KJHGKJHGJHG) format ('woff2'),
+         url (data: application / font-woff; charset = utf-8; base64, KJHGKJHGJHG) format ('woff');
+    font-weight: 300;
+    font-style: normal;
 }
 
-@font-face {
-  /* font_name: 'Formular'; */
-  /* font_style_name: 'Regular; */
-   font-family: 'formular';
-   src: url(data:application/font-woff2;charset=utf-8;base64,KJHGKJHGJHG) format('woff2'),
-        url(data:application/font-woff;charset=utf-8;base64,KJHGKJHGJHG) format('woff');
-   font-weight: 400;
-   font-style: normal;
+@ font-face {
+   /* font_name: 'Formular'; */
+   /* font_style_name: 'Regular; */
+    font-family: 'formular';
+    src: url (data: application / font-woff2; charset = utf-8; base64, KJHGKJHGJHG) format ('woff2'),
+         url (data: application / font-woff; charset = utf-8; base64, KJHGKJHGJHG) format ('woff');
+    font-weight: 400;
+    font-style: normal;
 }
 ```
 
-## Отображение статей
-Вывод HTML-кода статьи должен сопровождаться подключением скрипта:
+## Displaying Articles
+The HTML code of the article should be accompanied by the connection of the script:
 
 ```
-<script type = "text/javascript">
-	window.onVMSAPIReady = function( api ) {
-		api.Article.enable( {
-			<options>
-    		} );
-  	};
+<script type = "text / javascript">
+    window.onVMSAPIReady = function (api) {
+        api.Article.enable ({
+            <options>
+        });
+    };
 </script>
 <script src="//go.verstka.io/api.js" async type="text/javascript"></script>
 ```
 
-### Параметры `options`
-#### Все параметры являются необязательными
-* `observe_selector` – селекторы DOM-элементов, которые потенциально могут изменить положение статьи. Например, здесь указывается селектор баннера, расхлапывающегося над статьей.
-#### Далее параметры если верстать отдельную мобильную версию невозможно:
-* `display_mode` – переключает между режимами отображения статьи (`desktop` или `mobile`). Default: `desktop`;
-* `auto_mobile_detect` – автоматическое определение мобильных устройств по User Agent. Default: `true`;
-* `mobile_max_width` – ширина окна браузера, при которой происходит переключение между мобильной и десктопной версией статьи;
-
-
-
+### Options `options`
+#### All parameters are optional.
+* `observe_selector` - selectors of DOM elements that can potentially change the position of the article. For example, here is indicated the selector of a banner rapping over an article.
+#### Further parameters if it is impossible to type out a separate mobile version:
+* `display_mode` - switches between article display modes (` desktop` or `mobile`). Default: `desktop`;
+* `auto_mobile_detect` - automatic detection of mobile devices by User Agent. Default: `true`;
+* `mobile_max_width` - the width of the browser window, at which the switching between the mobile and desktop version of the article takes place;
