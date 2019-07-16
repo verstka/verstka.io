@@ -1,4 +1,8 @@
-SDK: [JavaScript](https://github.com/verstka/verstka.io/tree/master/JS-SDK), [PHP](https://github.com/verstka/verstka.io/tree/master/PHP-SDK)
+# Quick links
+
+[PHP SDK](https://github.com/verstka/verstka.io/tree/master/docs/ru/php-sdk.md)<br>
+[JavaScript SDK](https://github.com/verstka/verstka.io/tree/master/docs/ru/js-sdk.md)<br>
+[🇬🇧English language](https://github.com/verstka/verstka.io/tree/master)
 
 
 
