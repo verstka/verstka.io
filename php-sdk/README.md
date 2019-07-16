@@ -22,8 +22,8 @@ At this address, you must place the code that connects and initializes the SDK.
 
 ```
 <?php
-  include __DIR __. '/ vendor / vms / class.VMSsdk.php';
-  $ verstka = new \ devnow \ VMSsdk ($ apikey, $ secret, $ call_back_url, $ call_back_function, $ temp_dir_abs, $ web_root_abs, $ static_host_name);
+  include __DIR__.'/vendor/vms/class.VMSsdk.php';
+  $verstka = new \devnow\VMSsdk($apikey, $secret, $call_back_url, $call_back_function, $temp_dir_abs, $web_root_abs, $static_host_name);
 php?>
 ```
 * The values of `$apikey` and `$secret` are given to the client upon integration.
