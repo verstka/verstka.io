@@ -1,23 +1,23 @@
 # Verstka JavaScript-SDK
 
-  * [Integration with CMS](#Integration-with-cms)
-    * [Connect SDK](#connect-sdk)
-    * [Add to form](#Add-on-form)
+	* [Integration with CMS](#Integration-with-cms)
+		* [Connect SDK](#connect-sdk)
+		* [Add to form](#Add-on-form)
     
-  * [CMS interaction with editor](#Interaction-cms-with-editor)
+	* [CMS interaction with editor](#Interaction-cms-with-editor)
   
-    * [Events is_active and mobile_mode](#Events-is_active-and-mobile_mode)
+	* [Events is_active and mobile_mode](#Events-is_active-and-mobile_mode)
     
-      * [Saving using a POST request](#Saving-using-post-request)
-      * [Saving using a JS function call](#Saving-using-calling-js-functions)
+		* [Saving using a POST request](#Saving-using-post-request)
+		* [Saving using a JS function call](#Saving-using-calling-js-functions)
       
-    * [Material_desktop and material_mobile events](#Events-material_desktop-and-material_mobile)
+	* [Material_desktop and material_mobile events](#Events-material_desktop-and-material_mobile)
     
-      * [Saving using a POST request](#Saving-using-post-request-1)
-      * [Saving using a JS function call](#Saving-using-calling-js-function-1)
+		* [Saving using a POST request](#Saving-using-post-request-1)
+		* [Saving using a JS function call](#Saving-using-calling-js-function-1)
       
-  * [Display articles](#Display-articles)
-    * [Options options](#options-options)
+	* [Display articles](#Display-articles)
+		* [Options options](#options-options)
 
 ## CMS Integration
 Articles created in **Verstka** are HTML code and image files. <br>
