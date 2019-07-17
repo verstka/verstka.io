@@ -1,45 +1,24 @@
 # Verstka JavaScript-SDK
 
-  * [Интеграция с CMS](#Интеграция-с-cms)
-    * [Подключение SDK](#Подключение-sdk)
-    * [Добавление в форму](#Добавление-в-форму)
+  * [Integration with CMS](#cms-integration)
+    * [Connect SDK](#sdk-connection)
+    * [Add to form](#adding-to-the-form)
     
-  * [Взаимодействие CMS с редактором](#Взаимодействие-cms-с-редактором)
+  * [CMS interaction with editor](#cms-interaction-with-editor)
   
-    * [События is_active и mobile_mode](#События-is_active-и-mobile_mode)
+    * [Events is_active and mobile_mode](#events-is_active-and-mobile_mode)
     
-      * [Сохранение с помощью POST-запроса](#Сохранение-с-помощью-post-запроса)
-      * [Сохранение с помощью вызова JS-функции](#Сохранение-с-помощью-вызова-js-функции)
+      * [Saving using a POST request](#Saving-using-post-request)
+      * [Saving using a JS function call](#Saving-using-calling-js-functions)
       
-    * [События material_desktop и material_mobile](#События-material_desktop-и-material_mobile)
+    * [Material_desktop and material_mobile events](#Events-material_desktop-and-material_mobile)
     
-      * [Сохранение с помощью POST-запроса](#Сохранение-с-помощью-post-запроса-1)
-      * [Сохранение с помощью вызова JS-функции](#Сохранение-с-помощью-вызова-js-функции-1)
+      * [Saving using a POST request](#Saving-using-post-request-1)
+      * [Saving using a JS function call](#Saving-using-calling-js-function-1)
       
-  * [Отображение статей](#Отображение-статей)
-    * [Параметры options](#Параметры-options)
+  * [Display articles](#Display-articles)
+    * [Options](#options-options)
 
-
-# Verstka JavaScript-SDK
-
-	* [Integration with CMS](#Integration-with-cms)
-		* [Connect SDK](#connect-sdk)
-		* [Add to form](#Add-on-form)
-    
-	* [CMS interaction with editor](#Interaction-cms-with-editor)
-  
-	* [Events is_active and mobile_mode](#Events-is_active-and-mobile_mode)
-    
-		* [Saving using a POST request](#Saving-using-post-request)
-		* [Saving using a JS function call](#Saving-using-calling-js-functions)
-      
-	* [Material_desktop and material_mobile events](#Events-material_desktop-and-material_mobile)
-    
-		* [Saving using a POST request](#Saving-using-post-request-1)
-		* [Saving using a JS function call](#Saving-using-calling-js-function-1)
-      
-	* [Display articles](#Display-articles)
-		* [Options options](#options-options)
 
 ## CMS Integration
 Articles created in **Verstka** are HTML code and image files. <br>
