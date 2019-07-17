@@ -6,17 +6,17 @@
     
   * [CMS interaction with editor](#cms-interaction-with-editor)
   
-    * [Events is_active and mobile_mode](#events-is_active-and-mobile_mode)
+    * [Events is_active and mobile_mode](#events-is_activeandmobile_mode)
     
-      * [Saving using a POST request](#Saving-using-post-request)
-      * [Saving using a JS function call](#Saving-using-calling-js-functions)
+      * [Saving using a POST request](#saving-using-a-js-function-call)
+      * [Saving using a JS function call](#saving-using-a-js-function-call)
       
-    * [Material_desktop and material_mobile events](#Events-material_desktop-and-material_mobile)
+    * [Material_desktop and material_mobile events](#events-of-material_desktop-and-material_mobile)
     
-      * [Saving using a POST request](#Saving-using-post-request-1)
-      * [Saving using a JS function call](#Saving-using-calling-js-function-1)
+      * [Saving using a POST request](#saving-using-a-post-request-1)
+      * [Saving using a JS function call](#saving-using-a-js-function-call-1)
       
-  * [Display articles](#Display-articles)
+  * [Display articles](#displaying-articles)
     * [Options](#options-options)
 
 
