@@ -49,7 +49,7 @@ When trying to open a URL to edit a material, local authorization must: <br>
 * define `user_id`, which will be passed to` $ call_back_function`
 
 ### Database Request
-After that it is necessary to request the current HTML article from the database. <br>
+After that, it is necessary to request the current HTML article from the database. <br>
 For example, a query might look like this:
 ```
 select vms_source_desktop from t_materials where is_vms = true and material_id = [MATERIAL_ID]
