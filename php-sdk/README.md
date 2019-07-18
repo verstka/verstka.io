@@ -15,7 +15,7 @@ The HTML code of the article will contain links to images stored on your server.
 To do this, create a directory, for example, `/images/verstka/`.
 
 ### Preparing Routing
-Register the URL, which, when opened, will create and edit materials. <br>
+Register the URL, which, when opened, it will create and edit materials. <br>
 If `MATERIAL_ID` of all types of materials that you plan to edit using **Verstka** pass-through, then such a URL may, for example, have the form `/verstka_edit/[MATERIAL_ID]`.
 
 At this address, you must place the code that connects and initializes the SDK.
