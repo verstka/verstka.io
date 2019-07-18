@@ -124,7 +124,7 @@ php?>
 
 ## Use your own fonts
 
-You need to build a css file with certain comments and fonts sewn into base64 and then they will automatically appear in the Layout.
+You need to build a css file which certain comments and fonts sewn into base64 and then they will automatically appear in the Layout.
 
 At the top of the css file, you need to specify in the comments the default font that will be displayed when creating a new text object.
 ```
