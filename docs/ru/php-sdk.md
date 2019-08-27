@@ -121,6 +121,7 @@ function save_article ($body, $material_id, $user_id, $images, $custom_fields) {
 }
 php?>
 ```
+Важно! Не переименовывайте файлы картинок! Меняйте только пути.
 
 ## Использование собственных шрифтов
 
