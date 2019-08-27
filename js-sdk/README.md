@@ -171,7 +171,7 @@ The response to this request should be as follows:
 	"content": "..." // HTML of saved material.
 }
 ```
-An example of processing this request for PHP. The described function selects `$html` - HTML articles,` $custom_fields_json` - JSON with additional data and `$images` - an array with images.
+An example of processing this request for PHP. The described function selects `$html` - HTML articles,` $custom_fields_json` - JSON with additional data and `$images` - an array with images. Important! Don't rename image files during save!
 ```
 function saveDesktopMaterial() {
 	$html = '';
