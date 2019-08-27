@@ -171,7 +171,7 @@ function myMethodForSavingIsActive( event_name, current_value, prev_value, callb
 	"content": "..." // HTML сохраненного материала.
 }
 ```
-Пример обработки этого запроса на PHP. Описанная функция выделяет `$html` - HTML статьи, `$custom_fields_json` - JSON с дополнительными данными и `$images` – массив с изображениями.
+Пример обработки этого запроса на PHP. Описанная функция выделяет `$html` - HTML статьи, `$custom_fields_json` - JSON с дополнительными данными и `$images` – массив с изображениями. ВАЖНО! Не переименовывайте файлы изображений!
 ```
 function saveDesktopMaterial() {
 	$html = '';
