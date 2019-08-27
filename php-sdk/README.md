@@ -121,6 +121,7 @@ function save_article ($body, $material_id, $user_id, $images, $custom_fields) {
 }
 php?>
 ```
+Important! Don't rename images filenames! Change only path.
 
 ## Use your own fonts
 
