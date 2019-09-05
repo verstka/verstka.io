@@ -124,7 +124,8 @@ The HTML code of the article should be accompanied by the connection of the scri
 <script type = "text / javascript">
     window.onVMSAPIReady = function (api) {
         api.Article.enable ({
-            <options>
+            display_mode: 'desktop',
+            auto_mobile_detect: false
         });
     };
 </script>
