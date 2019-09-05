@@ -125,8 +125,9 @@ md5 от сконкатенированных параметров в следу
 ```
 <script type="text/javascript">
     window.onVMSAPIReady = function(api) {
-        api.Article.enable({
-            <options>
+        api.Article.enable ({
+            display_mode: 'desktop',
+            auto_mobile_detect: false
         });
     };
 </script>
