@@ -425,7 +425,7 @@
 				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 				curl_setopt($ch, CURLOPT_FAILONERROR, 1);
 
-				if ($params['return_handler']) {
+				if (isset($params['return_handler']) && $params['return_handler'] === true) {
                     			return $ch;
                 		}
 				
