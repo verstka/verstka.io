@@ -117,15 +117,18 @@
 				$images_to_download = $this->multiRequest($images_to_download);
 
 				$images = array();
+				$lacking_images = [];
 				foreach ($images_to_download as $image) {
-					if (!empty($images_to_download['result']) and $this->force_lacking_images) {
-						$this->brakeExecution($images_to_download['result']);
-					}
+					if (!empty($image['result'])) {
+						if ($this->force_lacking_images) {
+						    $this->brakeExecution($images_to_download['result']);
+						}
+						$lacking_images[] = $image;
+					    }
 					if (empty($images_to_download['result'])) {
 						$images[$image['image']] = $image['download_to'];
 					}
 				}
-				unset($images_to_download, $result);
 
 				$custom_fields = json_decode($_REQUEST['custom_fields'], true);
 				$call_back_result = call_user_func($this->call_back_function, $_REQUEST['html_body'], $_REQUEST['material_id'], $_REQUEST['user_id'], $images, $custom_fields);
@@ -137,7 +140,7 @@
 						}
 					}
 
-					die($this->formJSON(1, 'save sucessfull'));
+					die($this->formJSON(1, 'save sucessfull', ['lacking_images' => $lacking_images]));
 				} else {
 					die($this->formJSON(0, 'callback fail', $call_back_result));
 				}
