@@ -121,10 +121,10 @@
 				foreach ($images_to_download as $image) {
 					if (!empty($image['result'])) {
 						if ($this->force_lacking_images) {
-						    $this->brakeExecution($images_to_download['result']);
+							$this->brakeExecution('Image download problem ' . $image['result'] . PHP_EOL . print_r($image, true));
 						}
 						$lacking_images[] = $image;
-					    }
+					}
 					if (empty($images_to_download['result'])) {
 						$images[$image['image']] = $image['download_to'];
 					}
