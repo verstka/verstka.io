@@ -11,7 +11,7 @@ namespace devnow;
 
 class VMSsdk
 {
-    protected $default_vms_api_url = 'https://dev.verstka.io/api';
+    protected $default_vms_api_url = 'https://verstka.io/api';
     private $apikey;
     private $secret;
     private $host_name;
