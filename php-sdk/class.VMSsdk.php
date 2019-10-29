@@ -11,7 +11,7 @@ namespace devnow;
 
 class VMSsdk
 {
-    protected $default_vms_api_url = 'https://verstka.io/api';
+    protected $default_vms_api_url = 'https://dev.verstka.io/api';
     private $apikey;
     private $secret;
     private $host_name;
@@ -314,7 +314,7 @@ class VMSsdk
     protected function multiRequest($requests, $params = [])
     {
 
-        $max_requests_per_batch = 99;
+        $max_requests_per_batch = 50;
         if (!empty($this->max_multi_request_batch)) {
             $max_requests_per_batch = $this->max_multi_request_batch;
         }
@@ -339,7 +339,7 @@ class VMSsdk
             $active = true;
             while ($active && $mrc == CURLM_OK) {
                 if (curl_multi_select($mh) == -1) {
-                    usleep(100);
+                    usleep(300);
                 }
                 do {
                     $mrc = curl_multi_exec($mh, $active);
@@ -348,8 +348,13 @@ class VMSsdk
 
             foreach ($requests as $conf_id => $conf) {
                 $requests[$conf_id]['result'] = curl_multi_getcontent($requests[$conf_id]['curl']);
+                $info = curl_getinfo(($requests[$conf_id]['curl']));
                 $error = curl_error($requests[$conf_id]['curl']);
-                if (!empty($error)) {
+                if (!empty($error) || empty($info['size_download'])) {
+                    if (empty($info['size_download'])) {
+                        $error = 'zero size file';
+                    }
+                    $error = ['error' => $error, 'info' => $info];
                     $requests[$conf_id]['result'] = $error;
                     if (!empty($requests[$conf_id]['download_to'])) {
                         unlink($requests[$conf_id]['download_to']);
@@ -360,7 +365,6 @@ class VMSsdk
             }
             curl_multi_close($mh);
             $queues[$queue_id] = $requests;
-
         }
 
         $requests = array();
