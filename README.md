@@ -31,6 +31,7 @@ To edit an article, just send a POST request to the URL https://verstka.io/api/o
 
 Possible keys for the `custom_fields` array:
 
+* `mobile` = true - to edit the mobile version of the article
 * `auth_user` and `auth_pw` - if `host_name` is closed using http authorization
 * `fonts.css` - relative path to the CSS file with fonts to connect to the editor (described below)
 * any additional data (will be returned when the article is saved unchanged)
