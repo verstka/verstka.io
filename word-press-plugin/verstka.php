@@ -385,7 +385,7 @@
 			
 			<?php if ($post->vms_mobile_mode == 0) {  // Mobile: off ?>
 			
-				<meta name="viewport" content="width=1200, initial-scale=1">	
+				<!--<meta name="viewport" content="width=1200, initial-scale=1">-->
 				<script type="text/javascript">
 					window.onVMSAPIReady = function (api) {
 						api.Article.enable({
@@ -398,7 +398,7 @@
 			
 			<?php if ($post->vms_mobile_mode == 1) {  // Mobile: auto ?>
 				
-				<meta name="viewport" content="width=device-width, initial-scale=1">
+				<!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
 				<script type="text/javascript">
 					window.onVMSAPIReady = function (api) {
 						api.Article.enable({
@@ -412,7 +412,7 @@
 			
 			<?php if ($post->vms_mobile_mode == 2) {  // Mobile: custom ?>
 			
-				<meta name="viewport" content="width=device-width, initial-scale=1">
+				<!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
 				<script type="text/javascript">
 					window.onVMSAPIReady = function (api) {
 						api.Article.enable({
