@@ -15,6 +15,8 @@ The format of the returned data (except for downloading files) is JSON, and will
 * `rm` - message in text form
 * `data` - array of returned data
 
+The same format should be followed in the responses to verstka requests when saving the article.
+
 ## Editing an article
 
 To edit an article, just send a POST request to the URL https://verstka.io/api/open with parameters:
