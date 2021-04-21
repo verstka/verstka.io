@@ -72,7 +72,7 @@ md5 from the concatenated parameters in the following order: secret, session_id,
 `secret` - the key issued when connecting to the Verstka SaaS API
 
 Images of the article are available at `download_url` (returns a list) and` download_url` / `name` (returns a file),
-where `name` is the name of the file to download.
+where `name` is the name of the file to download. You can store images in any folder on your website, but please keep original name of the file.
 
 ## Use your own fonts
 
