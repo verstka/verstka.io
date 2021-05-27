@@ -77,6 +77,7 @@ where `name` is the name of the file to download. You can store images in any fo
 ## Use your own fonts
 
 You need to collect a CSS file with certain comments and fonts sewn into base64, and then they will automatically appear in the Layout.
+default url /vms_fonts.css
 
 At the top of the CSS file you need to specify the default font in the comments, which will be set when creating a new text object.
 ```
