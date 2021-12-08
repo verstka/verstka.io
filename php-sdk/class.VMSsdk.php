@@ -349,8 +349,8 @@ class VMSsdk
             foreach ($requests as $conf_id => $conf) {
                 $requests[$conf_id]['result'] = curl_multi_getcontent($requests[$conf_id]['curl']);
                 $info = curl_getinfo(($requests[$conf_id]['curl']));
-                $error = curl_error($requests[$conf_id]['curl']);
-                if (!empty($error) || empty($info['size_download'])) {
+                $error = print_r(curl_error($requests[$conf_id]['curl']), true);
+                if (!empty($error) || in_array(substr($info['http_code'], 0, 1), [4, 5]) || empty($info['size_download'])) {
                     if (empty($info['size_download'])) {
                         $error = 'zero size file';
                     }
