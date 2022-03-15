@@ -274,7 +274,5 @@ The HTML code of the article should be accompanied by the connection of the scri
 
 ### Options `options`
 All parameters are optional.
-* `display_mode` - switches between article display modes (` desktop` or `mobile`). Default: `desktop`;
-* `auto_mobile_detect` - automatic detection of mobile devices by User Agent. Default: `true`;
-* `mobile_max_width` - the width of the browser window, at which the switching between mobile and desktop version of the article takes place;
+* `display_mode` - switches between article display modes always set `default`;
 * `observe_selector` - selectors of DOM elements that can potentially change the position of the article. For example, here is indicated the selector of a banner rapping over an article.
