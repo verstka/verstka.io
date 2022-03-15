@@ -139,6 +139,4 @@ The HTML code of the article should be accompanied by the connection of the scri
 #### All parameters are optional.
 * `observe_selector` - selector of element that can potentially change position of the article. For example, selector of a banner, that can push an article down.
 #### Further parameters if it is impossible to type out a separate mobile version:
-* `display_mode` - switches between article display modes (` desktop` or `mobile`). Default: `desktop`;
-* `auto_mobile_detect` - automatic detection of mobile devices by User Agent. Default: `true`;
-* `mobile_max_width` - the width of the browser window, at which the switching between the mobile and desktop version of the article takes place;
+* `display_mode` - switches between article display modes, please set `default`;
