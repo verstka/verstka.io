@@ -19,7 +19,7 @@ The same format should be followed in the responses to verstka requests when sav
 
 ## Editing an article
 
-To edit an article, just send a POST request to the URL https://verstka.io/api/open with parameters:
+To edit an article, just send a POST request to the URL https://verstka.org/api/open with parameters:
 
 * `material_id` - material identifier (mandatory unique non-zero, when typesetting a separate mobile version, use the prefix 'M' in this field)
 * `user_id` - current user ID
