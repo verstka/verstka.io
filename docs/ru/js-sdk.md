@@ -26,7 +26,7 @@ JavaScript-SDK взаимодействует с CMS посредством POST
 ### Подключение SDK
 Подключите скрипт:
 ```
-<script src="//go.verstka.io/sdk/v2.js"></script>
+<script src="//go.verstka.org/sdk/v2.js"></script>
 ```
 SDK будет автоматически инициализирован, когда страница загрузится.
 
@@ -269,7 +269,7 @@ function myMethodForSavingMobileMaterial( event_name, current_value, prev_value,
     		} );
   	};
 </script>
-<script src="//go.verstka.io/api.js" async type="text/javascript"></script>
+<script src="//go.verstka.org/api.js" async type="text/javascript"></script>
 ```
 
 ### Параметры `options`
