@@ -20,7 +20,7 @@
 
 ## Редактирование статьи
 
-Для редактирования статьи достаточно отправить POST-запрос на URL https://verstka.io/api/open c параметрами:
+Для редактирования статьи достаточно отправить POST-запрос на URL https://verstka.org/api/open c параметрами:
 
 *  `material_id` - идентификатор материала (обязательный уникальный не нулевой, при верстке отдельной мобильной версии используйте префикс 'M' в этом поле)
 *  `user_id` - идентификатор текущего пользователя
@@ -134,7 +134,7 @@ md5 от сконкатенированных параметров в следу
         });
     };
 </script>
-<script src="//go.verstka.io/api.js" async type="text/javascript"></script>
+<script src="//go.verstka.org/api.js" async type="text/javascript"></script>
 ```
 
 ### Параметры `options`
