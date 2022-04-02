@@ -132,7 +132,7 @@ The HTML code of the article should be accompanied by the connection of the scri
         });
     };
 </script>
-<script src="//go.verstka.io/api.js" async type="text/javascript"></script>
+<script src="//go.verstka.org/api.js" async type="text/javascript"></script>
 ```
 
 ### Options `options`
