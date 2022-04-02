@@ -349,7 +349,7 @@
 				
 			</script>
 			
-			<script src = "//<?php echo $is_dev_mode ? 'dev' : 'go'; ?>.verstka.io/sdk/v2.js"></script>
+			<script src = "//<?php echo $is_dev_mode ? 'dev' : 'go'; ?>.verstka.org/sdk/v2.js"></script>
 			<?php
 		}
 	}
@@ -424,7 +424,7 @@
 			<?php } ?>
 			
 			
-			<script src="//<?php echo $is_dev_mode ? 'dev' : 'go'; ?>.verstka.io/api.js" async type="text/javascript"></script>
+			<script src="//<?php echo $is_dev_mode ? 'dev' : 'go'; ?>.verstka.org/api.js" async type="text/javascript"></script>
 			
 			<style>
 				[data-vms-version="1"] {
