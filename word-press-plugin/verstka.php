@@ -1,7 +1,7 @@
 <?php
 	/*
 	Plugin Name: Verstka
-	Plugin URI: http://verstka.io
+	Plugin URI: http://verstka.org
 	Description: Powerfull design tool & WYSIWYG
 	Version: 1.0
 	Author: devnow
@@ -9,11 +9,11 @@
 	*/
 
 	/*  Copyright 2016  devnow  (email: hello@devnow.ru)
-		Free use is limited to 200,000 article views created by verstka.io per month,
-		to obtain a license the company please contact our team via email hello@verstka.io.
+		Free use is limited to 200,000 article views created by verstka.org per month,
+		to obtain a license the company please contact our team via email hello@verstka.org.
 
-	In case of violation of this agreement you lose the ability to edit your articles via verstka.io
-	all maked by verstka.io content remain yours but in this case you will be able to edit them only manually.
+	In case of violation of this agreement you lose the ability to edit your articles via verstka.org
+	all maked by verstka.org content remain yours but in this case you will be able to edit them only manually.
 	*/
 
 	/*
