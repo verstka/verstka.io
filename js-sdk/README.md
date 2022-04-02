@@ -27,7 +27,7 @@ JavaScript-SDK interacts with CMS by means of POST requests and/or calling local
 ### SDK connection
 Connect the script:
 ```
-<script src="//go.verstka.io/sdk/v2.js"></script>
+<script src="//go.verstka.org/sdk/v2.js"></script>
 ```
 The SDK will be automatically initialized when the page loads.
 
@@ -269,7 +269,7 @@ The HTML code of the article should be accompanied by the connection of the scri
     		} );
   	};
 </script>
-<script src="//go.verstka.io/api.js" async type="text/javascript"></script>
+<script src="//go.verstka.org/api.js" async type="text/javascript"></script>
 ```
 
 ### Options `options`
