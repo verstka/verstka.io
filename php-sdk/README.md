@@ -40,7 +40,7 @@ This code performs:
 
 ## Creating and editing materials
 
-After creating an instance of a class by calling $ verstka = new \devnow\VMSsdk(...) as shown above, you need to follow your authorization procedure. This must be done after The VMSsdk class constructor automatically checks the headings of the current request for signs of callback from Verstka.io about saving the article. If so, he will independently verify the validity of the request and download the images and call your save function.
+After creating an instance of a class by calling $ verstka = new \devnow\VMSsdk(...) as shown above, you need to follow your authorization procedure. This must be done after The VMSsdk class constructor automatically checks the headings of the current request for signs of callback from Verstka.org about saving the article. If so, he will independently verify the validity of the request and download the images and call your save function.
 
 ### Local Authorization Bundle
 
@@ -178,7 +178,7 @@ Final css file:
   "repositories": [
     {
       "type": "git",
-      "url": "https://github.com/verstka/verstka.io",
+      "url": "https://github.com/verstka/verstka.org",
       "path": "/PHP-SDK"
     }
   ],
