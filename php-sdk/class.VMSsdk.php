@@ -11,7 +11,7 @@ namespace devnow;
 
 class VMSsdk
 {
-    protected $default_vms_api_url = 'https://verstka.io/api';
+    protected $default_vms_api_url = 'https://verstka.org/api';
     private $apikey;
     private $secret;
     private $host_name;
@@ -27,7 +27,7 @@ class VMSsdk
     public function __construct($apikey, $secret, $call_back_url, $call_back_function, $temp_dir_abs, $web_root_abs, $static_host_name)
     {
         if (empty($apikey) || empty($secret)) {
-            throw new VerstkaException('empty api-key, contact us to get one (hello@verstka.io)');
+            throw new VerstkaException('empty api-key, contact us to get one (hello@verstka.org)');
         }
 
         $this->apikey = $apikey;
@@ -520,7 +520,7 @@ function default_callback_function($body, $material_id, $user_id, $images, $cust
 
     $body .= PHP_EOL . PHP_EOL . '<style>[data-vms-version="1"]{position: relative; margin: 0 auto;}</style>' . PHP_EOL .
         '<script>window.onVMSAPIReady = function ( api ) {api.Article.enable();};</script>' . PHP_EOL .
-        '<script src="https://go.verstka.io/api.js" type="text/javascript"></script>';
+        '<script src="https://go.verstka.org/api.js" type="text/javascript"></script>';
 
     if (file_put_contents($material_html_file_absolute, $body)) {
 
