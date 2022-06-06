@@ -54,7 +54,7 @@ If the editor fails to download some images of the article, the following additi
 * `lacking_pictures` - list of missing images
 * `upload_url` - URL to upload via POST multipart / form-data
 
-# Saving an article
+## Saving an article
 
 Saving an article is available within 48 hours from the last interaction (opening or previous saving) of this article.
 
