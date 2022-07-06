@@ -9,6 +9,8 @@
 
 Verstka offers developers a convenient way to integrate the editor into the site via an API.
 
+Format of any query is POST multipart/formData
+
 The format of the returned data (except for downloading files) is JSON, and will have the following fields:
 
 * `rc` - result result code (1 - for successful queries)
