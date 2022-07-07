@@ -47,7 +47,7 @@ In response, the Verstka API will return the following data fields as JSON:
 
 Also in the answer will be additional fields:
 
-* `last_save` - the last time the article was saved (in case the article was recently edited)
+* `last_save` - the last time the article was saved (in case the article was recently edited) *DEPRECATED*
 * `contents` - the URL to get the content of the editing session (required only for integration without `callback_url`)
 * `client_folder` - the calculated relative URL to the static content of the article on `host_name` (for debug)
 
