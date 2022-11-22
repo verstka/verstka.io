@@ -1,7 +1,7 @@
 # Quick links
 
 [PHP SDK](https://github.com/verstka/php-sdk)<br>
-[JavaScript SDK](https://github.com/verstka/verstka.io/tree/master/docs/ru/js-sdk.md)<br>
+[JavaScript SDK](https://github.com/verstka/verstka-js-sdk)<br>
 [🇬🇧English language](https://github.com/verstka/verstka.io/tree/master)
 
 
