@@ -127,6 +127,8 @@ Final CSS file:
 The HTML code of the article should be accompanied by the connection of the script:
 
 ```
+<link href="//go.verstka.org/critical.css" rel="stylesheet">
+
 <script type = "text / javascript">
     window.onVMSAPIReady = function (api) {
         api.Article.enable ({
