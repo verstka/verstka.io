@@ -129,6 +129,8 @@ md5 от сконкатенированных параметров в следу
 Вывод HTML-кода статьи должен сопровождаться подключением скрипта:
 
 ```
+<link href="//go.verstka.org/critical.css" rel="stylesheet">
+
 <script type="text/javascript">
     window.onVMSAPIReady = function(api) {
         api.Article.enable ({
