@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: Verstka
-Plugin URI: http://verstka.io
-Description: Powerfull design tool & WYSIWYG
-Version: 1.0
-Author: devnow
-Author URI: http://devnow.ru
+	Plugin Name: Verstka
+	Plugin URI: http://verstka.io
+	Description: Powerfull design tool & WYSIWYG
+	Version: 1.0
+	Author: devnow
+	Author URI: http://devnow.ru
 */
 
 /*  Copyright 2016  devnow  (email: hello@devnow.ru)
@@ -38,6 +38,7 @@ function wp_maybe_add_column($table_name, $column_name, $create_ddl)
             return true;
         }
     }
+
     return false;
 }
 
@@ -46,9 +47,9 @@ function verstka_init()
 {
     global $wpdb;
     $table_name = $wpdb->posts;
-    $column_name_isvms = "post_isvms";
-    $column_name_vms_content = "post_vms_content";
-    $column_name_vms_content_mobile = "post_vms_content_mobile";
+    $column_name_isvms = 'post_isvms';
+    $column_name_vms_content = 'post_vms_content';
+    $column_name_vms_content_mobile = 'post_vms_content_mobile';
 
     $sqlQuery_add_isvms = "ALTER TABLE $table_name ADD COLUMN post_isvms BOOLEAN NOT NULL DEFAULT 0 AFTER post_date_gmt";
     $sqlQuery_add_vms_content = "ALTER TABLE $table_name ADD COLUMN post_vms_content longtext AFTER post_content";
@@ -60,7 +61,7 @@ function verstka_init()
     ) {
         //колонка добавлена или уже существует :)
     } else {
-        die ('Error adding VMS cloumns into db');
+        die('Error adding VMS cloumns into db');
     }
 }
 
@@ -76,11 +77,11 @@ function save_isvms_post_state($post_id)
     $is_vms = $_REQUEST['is_vms'] ?? null;
 
     if (!empty($is_vms)) {
-        $data = array(
+        $data = [
             'post_isvms' => ($is_vms == 'true') ? 1 : 0
-        );
+        ];
 
-        $wpdb->update($wpdb->posts, $data, array('id' => $post_id));
+        $wpdb->update($wpdb->posts, $data, ['id' => $post_id]);
     }
 }
 
@@ -95,9 +96,9 @@ function save_vms_article()
     $uload_dir_rel = wp_upload_dir();
     $uload_dir_rel = parse_url($uload_dir_rel['baseurl']);
     $uload_dir_rel = $uload_dir_rel['path'];
-    $uload_dir_abs = (substr(ABSPATH, -1) == "/" ? substr(ABSPATH, 0, -1) : ABSPATH) . $ds . 'wp-content' . $ds . 'uploads' . $ds . 'vms' . $ds;
+    $uload_dir_abs = (substr(ABSPATH, -1) == '/' ? substr(ABSPATH, 0, -1) : ABSPATH) . $ds . 'wp-content' . $ds . 'uploads' . $ds . 'vms' . $ds;
 
-    $uploaded = array();
+    $uploaded = [];
 
     @mkdir($uload_dir_abs . $_POST['material_id'], 0777, true);
 
@@ -121,22 +122,22 @@ function save_vms_article()
 
     $source = str_replace('/vms_images/', $uload_dir_rel . '/vms/' . $_POST['material_id'] . '/', $source);
 
-    $data = array(
+    $data = [
         'post_isvms' => 1,
         'post_vms_content' => $source
-    );
+    ];
     global $wpdb;
-    $rew = $wpdb->update($wpdb->posts, $data, array('id' => $_POST['material_id']));
+    $rew = $wpdb->update($wpdb->posts, $data, ['id' => $_POST['material_id']]);
     if (function_exists('wp_cache_clear_cache')) {
         wp_cache_clear_cache();
     }
 
-    echo json_encode(array(
+    echo json_encode([
         'status' => 1,
         'content' => $source
-    ), JSON_NUMERIC_CHECK);
+    ], JSON_NUMERIC_CHECK);
 
-//		echo formJSON(1, 'saved', array('body' => $source));
+    //		echo formJSON(1, 'saved', array('body' => $source));
     wp_die();
 }
 
@@ -151,9 +152,9 @@ function save_vms_article_mobile()
     $uload_dir_rel = wp_upload_dir();
     $uload_dir_rel = parse_url($uload_dir_rel['baseurl']);
     $uload_dir_rel = $uload_dir_rel['path'];
-    $uload_dir_abs = (substr(ABSPATH, -1) == "/" ? substr(ABSPATH, 0, -1) : ABSPATH) . $ds . 'wp-content' . $ds . 'uploads' . $ds . 'vms' . $ds;
+    $uload_dir_abs = (substr(ABSPATH, -1) == '/' ? substr(ABSPATH, 0, -1) : ABSPATH) . $ds . 'wp-content' . $ds . 'uploads' . $ds . 'vms' . $ds;
 
-    $uploaded = array();
+    $uploaded = [];
 
     @mkdir($uload_dir_abs . $_POST['material_id'] . '_m', 0777, true);
 
@@ -177,22 +178,22 @@ function save_vms_article_mobile()
 
     $source = str_replace('/vms_images/', $uload_dir_rel . '/vms/' . $_POST['material_id'] . '_m' . '/', $source);
 
-    $data = array(
+    $data = [
         'post_isvms' => 1,
         'post_vms_content_mobile' => $source
-    );
+    ];
     global $wpdb;
-    $rew = $wpdb->update($wpdb->posts, $data, array('id' => $_POST['material_id']));
+    $rew = $wpdb->update($wpdb->posts, $data, ['id' => $_POST['material_id']]);
     if (function_exists('wp_cache_clear_cache')) {
         wp_cache_clear_cache();
     }
 
-    echo json_encode(array(
+    echo json_encode([
         'status' => 1,
         'content' => $source
-    ), JSON_NUMERIC_CHECK);
+    ], JSON_NUMERIC_CHECK);
 
-//		echo formJSON(1, 'saved', array('body' => $source));
+    //		echo formJSON(1, 'saved', array('body' => $source));
     wp_die();
 }
 
@@ -442,13 +443,57 @@ function apply_vms_content($content)
 {
     $post = get_post();
 
-    if (($post->post_isvms == 1) && ($content == $post->post_content)) {
-        if (wp_is_mobile() && !empty($post->post_vms_content_mobile)) {
-            $content = $post->post_vms_content_mobile;
-        } else {
-            $content = $post->post_vms_content;
-        }
-    }
+    $mobile = empty($post->post_vms_content_mobile) ? $post->post_vms_content : $post->post_vms_content_mobile;
+
+    $content = "<div class=\"verstka-article\">{$post->post_vms_content}<\div>
+		<script type=\"text/javascript\" id=\"verstka-init\">
+		window.onVMSAPIReady = function (api) {
+			api.Article.enable({
+				display_mode: 'desktop'
+			});
+
+			document.querySelectorAll('article')[0].classList.add('shown');
+		};
+
+		var htmls = {
+			desktop: `{$post->post_vms_content}`,
+			mobile: `{$mobile}`,
+		};
+		var isMobile = false;
+		var prev = null;
+
+		function switchHtml(html) {
+			var article = document.querySelector('.verstka-article')
+
+			if (window.VMS_API) {
+				window.VMS_API.Article.disable()
+			}
+
+			article.innerHTML = html;
+
+			if (window.VMS_API) {
+				window.VMS_API.Article.enable({display_mode: 'desktop'})
+			}
+		}
+
+		function onResize() {
+			var w = document.documentElement.clientWidth;
+
+			isMobile = w < 768;
+
+			if (prev !== isMobile) {
+				prev = isMobile
+				switchHtml(htmls[isMobile ? 'mobile' : 'desktop'])
+			}
+		}
+
+		onResize()
+
+		window.onresize = onResize;
+
+	</script>
+
+	";
 
     remove_filter('the_content', 'wpautop');
     remove_filter('the_excerpt', 'wpautop');
@@ -468,23 +513,23 @@ function add_this_script_footer()
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript">
-      window.onVMSAPIReady = function (api) {
-        api.Article.enable({
-          display_mode: 'desktop'
-        });
-      };
+      //       window.onVMSAPIReady = function (api) {
+      //         api.Article.enable({
+      //           display_mode: 'desktop'
+      //         });
+      //       };
     </script>
 
     <script src="//<?php echo $is_dev_mode ? 'dev' : 'go'; ?>.verstka.org/api.js" async type="text/javascript"></script>
 
     <style>
-        [data-vms-version="1"] {
-            visibility: hidden;
-        }
+        /*         [data-vms-version="1"] {
+                    visibility: hidden;
+                }
 
-        [data-vms-version="1"].body--inited {
-            visibility: visible;
-        }
+                [data-vms-version="1"].body--inited {
+                    visibility: visible;
+                } */
     </style>
 
     <?php
@@ -507,8 +552,9 @@ function add_this_script_footer()
 add_filter('manage_post_posts_custom_column', 'fill_is_vms_column', 5, 2); // wp-admin/includes/class-wp-posts-list-table.php
 function fill_is_vms_column($column_name, $post_id)
 {
-    if ($column_name != 'is_vms')
+    if ($column_name != 'is_vms') {
         return;
+    }
     $post = get_post($post_id);
     if ($post->post_isvms == 1) {
         echo '&#9733';
@@ -521,14 +567,16 @@ add_filter('manage_edit-post_sortable_columns', 'add_is_vms_sortable_column');
 function add_is_vms_sortable_column($sortable_columns)
 {
     $sortable_columns['is_vms'] = 'is_vms_is_vms';
+
     return $sortable_columns;
 }
 
 add_action('pre_get_posts', 'add_column_is_vms_request');
 function add_column_is_vms_request($query)
 {
-    if (!is_admin())
+    if (!is_admin()) {
         return;
+    }
     if ($query->get('orderby') == 'is_vms_is_vms') {
         $query->set('orderby', 'post_isvms');
     }
@@ -571,12 +619,12 @@ function wpdocs_register_verstka_styles()
 function verstka_settings_page()
 {
     $hidden_field_name = 'verstka_settings_hidden';
-    $settings_names = array(
+    $settings_names = [
         'email',
         'api_key',
         'images_source',
         'dev_mode'
-    );
+    ];
 
     if ($_POST[$hidden_field_name] == 'true') {
         if ($_POST['confirm']) {
@@ -585,29 +633,29 @@ function verstka_settings_page()
                     update_option($name, $_POST[$name]);
                 }
             }
-        } else if ($_POST['reset']) {
+        } elseif ($_POST['reset']) {
             foreach ($settings_names as $name) {
                 delete_option($name);
             }
-        } else if ($_POST['dev_mode_off']) {
+        } elseif ($_POST['dev_mode_off']) {
             update_option('dev_mode', 'off');
-        } else if ($_POST['dev_mode_on']) {
+        } elseif ($_POST['dev_mode_on']) {
             update_option('dev_mode', 'on');
         }
-//			if ( $_POST[ 'submit' ] != 'Reset' ) {
-//				foreach ( $settings_names as $name ) {
-//					if ( !empty( $_POST[ $name ] ) ) {
-//						update_option( $name, $_POST[ $name ] );
-//					}
-//				}
-//			} else {
-//				foreach ( $settings_names as $name ) {
-//					delete_option( $name );
-//				}
-//			}
+        //			if ( $_POST[ 'submit' ] != 'Reset' ) {
+        //				foreach ( $settings_names as $name ) {
+        //					if ( !empty( $_POST[ $name ] ) ) {
+        //						update_option( $name, $_POST[ $name ] );
+        //					}
+        //				}
+        //			} else {
+        //				foreach ( $settings_names as $name ) {
+        //					delete_option( $name );
+        //				}
+        //			}
     }
 
-    $settings = array();
+    $settings = [];
     foreach ($settings_names as $name) {
         $settings[$name] = get_option($name);
     }
