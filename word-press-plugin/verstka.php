@@ -1,25 +1,24 @@
 <?php
 /*
-	Plugin Name: Verstka
-	Plugin URI: http://verstka.io
-	Description: Powerfull design tool & WYSIWYG
-	Version: 1.0
-	Author: devnow
-	Author URI: http://devnow.ru
+Plugin Name: Verstka
+Plugin URI: http://verstka.org
+Description: Powerfull design tool & WYSIWYG
+Version: 2.0
+Author: devnow
+Author URI: http://devnow.ru
 */
 
 /*  Copyright 2016  devnow  (email: hello@devnow.ru)
-    Free use is limited to 200,000 article views created by verstka.io per month,
+    Free use is limited to 200,000 article views created by verstka.org per month,
     to obtain a license the company please contact our team via email hello@verstka.io.
 
-In case of violation of this agreement you lose the ability to edit your articles via verstka.io
-all maked by verstka.io content remain yours but in this case you will be able to edit them only manually.
+In case of violation of this agreement you lose the ability to edit your articles via verstka.org
+all maked by verstka.org content remain yours but in this case you will be able to edit them only manually.
 */
 
 /*
     вставляет нужные поля в базу
 */
-
 function wp_maybe_add_column($table_name, $column_name, $create_ddl)
 {
     global $wpdb;
@@ -48,6 +47,7 @@ function verstka_init()
     global $wpdb;
     $table_name = $wpdb->posts;
     $column_name_isvms = 'post_isvms';
+    $column_name_vms_mobile_mode = 'vms_mobile_mode';
     $column_name_vms_content = 'post_vms_content';
     $column_name_vms_content_mobile = 'post_vms_content_mobile';
 
@@ -68,12 +68,10 @@ function verstka_init()
 /*
     Сохраняет галочку is_vms
 */
-
 add_action('save_post', 'save_isvms_post_state');
 function save_isvms_post_state($post_id)
 {
     global $wpdb, $post; //post old state & db
-
     $is_vms = $_REQUEST['is_vms'] ?? null;
 
     if (!empty($is_vms)) {
@@ -86,80 +84,44 @@ function save_isvms_post_state($post_id)
 }
 
 /*
-    Обрабатывает аякс на сохранение VMS-статьи
+    Обрабатывает аякс на сохранение VMS-статьи (десктопная версия)
 */
-
 add_action('wp_ajax_save_vms_article', 'save_vms_article');
 function save_vms_article()
 {
-    $ds = DIRECTORY_SEPARATOR;
-    $uload_dir_rel = wp_upload_dir();
-    $uload_dir_rel = parse_url($uload_dir_rel['baseurl']);
-    $uload_dir_rel = $uload_dir_rel['path'];
-    $uload_dir_abs = (substr(ABSPATH, -1) == '/' ? substr(ABSPATH, 0, -1) : ABSPATH) . $ds . 'wp-content' . $ds . 'uploads' . $ds . 'vms' . $ds;
-
-    $uploaded = [];
-
-    @mkdir($uload_dir_abs . $_POST['material_id'], 0777, true);
-
-    foreach ($_FILES as $file_name => $file_data) {
-
-        if ($file_name == 'index_html') {
-            $source = file_get_contents($file_data['tmp_name']);
-            continue;
-        }
-        if ($file_name == 'custom_fields_json') {
-            $custom_fields = file_get_contents($file_data['tmp_name']);
-            continue;
-        }
-
-        $file_name = strrev(implode(strrev('.'), explode(strrev('_'), strrev($file_name), 2)));
-
-        $upd = move_uploaded_file($file_data['tmp_name'], $uload_dir_abs . $_POST['material_id'] . $ds . $file_name);
-        $uploaded[$file_name] = $upd;
-    }
-
-
-    $source = str_replace('/vms_images/', $uload_dir_rel . '/vms/' . $_POST['material_id'] . '/', $source);
-
-    $data = [
-        'post_isvms' => 1,
-        'post_vms_content' => $source
-    ];
-    global $wpdb;
-    $rew = $wpdb->update($wpdb->posts, $data, ['id' => $_POST['material_id']]);
-    if (function_exists('wp_cache_clear_cache')) {
-        wp_cache_clear_cache();
-    }
-
-    echo json_encode([
-        'status' => 1,
-        'content' => $source
-    ], JSON_NUMERIC_CHECK);
-
-    //		echo formJSON(1, 'saved', array('body' => $source));
-    wp_die();
+    return save_vms_article_backend();
 }
 
 /*
     Обрабатывает аякс на сохранение VMS-статьи (мобильная версия)
 */
-
 add_action('wp_ajax_save_vms_article_mobile', 'save_vms_article_mobile');
 function save_vms_article_mobile()
 {
-    $ds = DIRECTORY_SEPARATOR;
-    $uload_dir_rel = wp_upload_dir();
-    $uload_dir_rel = parse_url($uload_dir_rel['baseurl']);
-    $uload_dir_rel = $uload_dir_rel['path'];
-    $uload_dir_abs = (substr(ABSPATH, -1) == '/' ? substr(ABSPATH, 0, -1) : ABSPATH) . $ds . 'wp-content' . $ds . 'uploads' . $ds . 'vms' . $ds;
+    return save_vms_article_backend(true);
+}
+
+/*
+    Обрабатывает аякс на сохранение VMS-статьи
+*/
+function save_vms_article_backend($is_mobile = false)
+{
+    $uploadDirRel = rtrim(get_option('images_dir') ?? '', '/');
+    if (empty($uploadDirRel)) {
+        $uploadDirAbs = wp_upload_dir()['basedir'] . '/vms';
+        $uploadDirRel = parse_url(wp_upload_dir()['baseurl'], PHP_URL_PATH) . '/vms';
+    } else {
+        $uploadDirAbs = sprintf('%s/%s', rtrim(ABSPATH, '/'), ltrim($uploadDirRel, '/'));
+    }
+//    $uload_dir_rel = '/wp-content/themes/moskvichmag/verstka/';
 
     $uploaded = [];
-
-    @mkdir($uload_dir_abs . $_POST['material_id'] . '_m', 0777, true);
+    $uploadMaterialPathAdding = sprintf(($is_mobile ? '%sm' : '%s'), $_POST['material_id']);
+    $uploadDirAbs = sprintf('%s/%s', $uploadDirAbs, $uploadMaterialPathAdding);
+    $uploadDirRel = sprintf('%s/%s', $uploadDirRel, $uploadMaterialPathAdding);
+    @mkdir($uploadDirAbs, 0777, true);
 
     foreach ($_FILES as $file_name => $file_data) {
-
         if ($file_name == 'index_html') {
             $source = file_get_contents($file_data['tmp_name']);
             continue;
@@ -169,19 +131,26 @@ function save_vms_article_mobile()
             continue;
         }
 
+        $file_name = str_replace(['_large', '_small'], ['-large', '-small'], $file_name);
         $file_name = strrev(implode(strrev('.'), explode(strrev('_'), strrev($file_name), 2)));
+        $file_name = str_replace(['-large', '-small'], ['_large', '_small'], $file_name);
 
-        $upd = move_uploaded_file($file_data['tmp_name'], $uload_dir_abs . $_POST['material_id'] . '_m' . $ds . $file_name);
+        $upd = move_uploaded_file($file_data['tmp_name'], sprintf('%s/%s', $uploadDirAbs, $file_name));
         $uploaded[$file_name] = $upd;
     }
 
-
-    $source = str_replace('/vms_images/', $uload_dir_rel . '/vms/' . $_POST['material_id'] . '_m' . '/', $source);
+    $source = str_replace('/vms_images/', sprintf('%s/', $uploadDirRel), $source);
 
     $data = [
         'post_isvms' => 1,
-        'post_vms_content_mobile' => $source
     ];
+
+    if ($is_mobile) {
+        $data['post_vms_content_mobile'] = $source;
+    } else {
+        $data['post_vms_content'] = $source;
+    }
+
     global $wpdb;
     $rew = $wpdb->update($wpdb->posts, $data, ['id' => $_POST['material_id']]);
     if (function_exists('wp_cache_clear_cache')) {
@@ -193,23 +162,13 @@ function save_vms_article_mobile()
         'content' => $source
     ], JSON_NUMERIC_CHECK);
 
-    //		echo formJSON(1, 'saved', array('body' => $source));
     wp_die();
 }
 
-//	function formJSON ($res_code, $res_msg, $data = array())
-//	{
-//		return json_encode(array(
-//				'rc' => $res_code,
-//				'rm' => $res_msg,
-//				'data' => $data
-//		), JSON_NUMERIC_CHECK);
-//	}
 
 /*
     Вставляет скрипты для подключения SDK
 */
-
 add_action('admin_print_footer_scripts', 'my_admin_print_footer_scripts', 99);
 function my_admin_print_footer_scripts()
 {
@@ -217,8 +176,7 @@ function my_admin_print_footer_scripts()
     if (is_object($post)) {
         $vms_content = $post->post_vms_content;
 
-        $is_dev_mode = get_option('dev_mode') == 'on' ? true : false;
-        ?>
+        $is_dev_mode = get_option('dev_mode') == 'on' ? true : false; ?>
         <script>
           var settings = {
               'api_key': '<?php echo get_option('api_key'); ?>',
@@ -433,13 +391,16 @@ function my_admin_print_footer_scripts()
 
         </script>
 
-        <script src="//<?php echo $is_dev_mode ? 'dev' : 'go'; ?>.verstka.org/sdk/v3.js?<?php echo rand(1000, 1000000); ?>"></script>
+        <script src="//<?php echo $is_dev_mode ? 'dev' : 'go'; ?>.verstka.org/sdk/v3.js?<?php echo rand(1000, 9999); ?>"></script>
         <?php
     }
 }
 
-add_filter('the_content', 'apply_vms_content', 1);
-function apply_vms_content($content)
+/*
+    Подменяет содержимое статьи на нужную версию контента
+*/
+add_filter('the_content', 'apply_vms_content_after', 9999);
+function apply_vms_content_after($content)
 {
     $post = get_post();
 
@@ -495,60 +456,43 @@ function apply_vms_content($content)
 
 	";
 
-    remove_filter('the_content', 'wpautop');
-    remove_filter('the_excerpt', 'wpautop');
-    remove_filter('the_content', 'wptexturize');
-
     return $content;
 }
 
+/*
+    Активирует отображение анимаций
+*/
 add_action('wp_head', 'add_this_script_footer');
 function add_this_script_footer()
 {
-    $is_dev_mode = get_option('dev_mode') == 'on' ? true : false;
-
-    $post = get_post();
-
-    ?>
+    $is_dev_mode = get_option('dev_mode') == 'on' ? true : false; ?>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script type="text/javascript">
-      //       window.onVMSAPIReady = function (api) {
-      //         api.Article.enable({
-      //           display_mode: 'desktop'
-      //         });
-      //       };
-    </script>
-
     <script src="//<?php echo $is_dev_mode ? 'dev' : 'go'; ?>.verstka.org/api.js" async type="text/javascript"></script>
 
-    <style>
-        /*         [data-vms-version="1"] {
-                    visibility: hidden;
-                }
-
-                [data-vms-version="1"].body--inited {
-                    visibility: visible;
-                } */
-    </style>
-
     <?php
-
 }
 
-//	add_filter('manage_edit-post_columns', 'add_is_vms_column', 4);
-//	function add_is_vms_column ($columns)
-//	{
-//		$result = array();
-//		foreach ($columns as $name => $value) {
-//			if ($name == 'title') {
-//				$result['is_vms'] = 'VMS';
-//			}
-//			$result[$name] = $value;
-//		}
-//		return $result;
-//	}
+/*
+    Добавляет в список статей колонку Ѵ признак что это cтатья из verstka
+*/
+add_filter('manage_edit-post_columns', 'add_is_vms_column', 4);
+function add_is_vms_column($columns)
+{
+    $result = [];
+    foreach ($columns as $name => $value) {
+        if ($name == 'title') {
+            $result['is_vms'] = 'Ѵ';
+        }
+        $result[$name] = $value;
+    }
 
+    return $result;
+}
+
+/*
+   Отображает закрашенную звездочку в колонке Ѵ если это статья из verstka
+*/
 add_filter('manage_post_posts_custom_column', 'fill_is_vms_column', 5, 2); // wp-admin/includes/class-wp-posts-list-table.php
 function fill_is_vms_column($column_name, $post_id)
 {
@@ -563,6 +507,9 @@ function fill_is_vms_column($column_name, $post_id)
     }
 }
 
+/*
+   Позволяет сортировать статьи в списке по признаку Ѵ
+*/
 add_filter('manage_edit-post_sortable_columns', 'add_is_vms_sortable_column');
 function add_is_vms_sortable_column($sortable_columns)
 {
@@ -623,6 +570,7 @@ function verstka_settings_page()
         'email',
         'api_key',
         'images_source',
+        'images_dir',
         'dev_mode'
     ];
 
@@ -642,24 +590,12 @@ function verstka_settings_page()
         } elseif ($_POST['dev_mode_on']) {
             update_option('dev_mode', 'on');
         }
-        //			if ( $_POST[ 'submit' ] != 'Reset' ) {
-        //				foreach ( $settings_names as $name ) {
-        //					if ( !empty( $_POST[ $name ] ) ) {
-        //						update_option( $name, $_POST[ $name ] );
-        //					}
-        //				}
-        //			} else {
-        //				foreach ( $settings_names as $name ) {
-        //					delete_option( $name );
-        //				}
-        //			}
     }
 
     $settings = [];
     foreach ($settings_names as $name) {
         $settings[$name] = get_option($name);
-    }
-    ?>
+    } ?>
 
     <form name="verstka_settings" method="post"
           action="<?php echo str_replace('%7E', '~', $_SERVER['REQUEST_URI']); ?>">
@@ -683,9 +619,15 @@ function verstka_settings_page()
                 </p>
 
                 <p class="verstka_settings__label">
-                    <span>Images source:</span>
+                    <span>Images source host:</span>
                     <input class="verstka_settings__input" type="text" name="images_source"
-                           value="//<?php echo $_SERVER['HTTP_HOST']; ?>">
+                           value="<?php echo $_SERVER['HTTP_HOST']; ?>">
+                </p>
+
+                <p class="verstka_settings__label">
+                    <span>Images dir:</span>
+                    <input class="verstka_settings__input" type="text" name="images_dir"
+                           value="<?php echo parse_url(wp_upload_dir()['baseurl'], PHP_URL_PATH) . '/vms'; ?>">
                 </p>
 
                 <input type="submit" name="confirm" value="Confirm"/>
@@ -696,7 +638,8 @@ function verstka_settings_page()
             <div class="verstka_settings__section verstka_settings__section--step-2">
                 <p class="verstka_settings__label">
                     API key: <b><?php echo $settings['api_key']; ?></b><br>
-                    Images source: <b><?php echo $settings['images_source']; ?></b>
+                    Images source host: <b><?php echo $settings['images_source']; ?></b><br>
+                    Images dir: <b><?php echo $settings['images_dir']; ?></b>
                 </p>
                 <input type="submit" name="reset" value="Reset"/>
 
