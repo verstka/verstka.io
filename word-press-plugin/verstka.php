@@ -113,7 +113,6 @@ function save_vms_article_backend($is_mobile = false)
     } else {
         $uploadDirAbs = sprintf('%s/%s', rtrim(ABSPATH, '/'), ltrim($uploadDirRel, '/'));
     }
-//    $uload_dir_rel = '/wp-content/themes/moskvichmag/verstka/';
 
     $uploaded = [];
     $uploadMaterialPathAdding = sprintf(($is_mobile ? '%sm' : '%s'), $_POST['material_id']);
