@@ -113,7 +113,6 @@ function save_vms_article_backend($is_mobile = false)
     } else {
         $uploadDirAbs = sprintf('%s/%s', rtrim(ABSPATH, '/'), ltrim($uploadDirRel, '/'));
     }
-//    $uload_dir_rel = '/wp-content/themes/moskvichmag/verstka/';
 
     $uploaded = [];
     $uploadMaterialPathAdding = sprintf(($is_mobile ? '%sm' : '%s'), $_POST['material_id']);
@@ -403,15 +402,15 @@ add_filter('the_content', 'apply_vms_content_after', 9999);
 function apply_vms_content_after($content)
 {
     $post = get_post();
-		
+
 	if ($post->post_isvms != 1) { // it's not an Verstka article
 		return $content;
 	}
-	
+
 	if (post_password_required($post)) { // in case of post password protected
 		return $content;
 	}
-		
+
     $mobile = empty($post->post_vms_content_mobile) ? $post->post_vms_content : $post->post_vms_content_mobile;
 
     $content = "<div class=\"verstka-article\">{$post->post_vms_content}<\div>
