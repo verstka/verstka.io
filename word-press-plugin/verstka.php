@@ -413,7 +413,7 @@ function apply_vms_content_after($content)
 
     $mobile = empty($post->post_vms_content_mobile) ? $post->post_vms_content : $post->post_vms_content_mobile;
 
-    $content = "<div class=\"verstka-article\">{$post->post_vms_content}<\div>
+    $content = "<div class=\"verstka-article\">{$post->post_vms_content}</div>
 		<script type=\"text/javascript\" id=\"verstka-init\">
 		window.onVMSAPIReady = function (api) {
 			api.Article.enable({
