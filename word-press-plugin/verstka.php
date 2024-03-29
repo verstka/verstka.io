@@ -3,7 +3,7 @@
 Plugin Name: Verstka
 Plugin URI: http://verstka.org
 Description: Powerfull design tool & WYSIWYG
-Version: 2.0.3
+Version: 2.0.4
 Author: devnow
 Author URI: http://devnow.ru
 */
