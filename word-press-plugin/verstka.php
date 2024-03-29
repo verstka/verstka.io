@@ -3,7 +3,7 @@
 Plugin Name: Verstka
 Plugin URI: http://verstka.org
 Description: Powerfull design tool & WYSIWYG
-Version: 2.0.2
+Version: 2.0.3
 Author: devnow
 Author URI: http://devnow.ru
 */
@@ -413,6 +413,9 @@ function apply_vms_content_after($content)
 
     $mobile = empty($post->post_vms_content_mobile) ? $post->post_vms_content : $post->post_vms_content_mobile;
 
+    $desktop = base64_encode($post->post_vms_content);
+    $mobile = base64_encode($mobile);
+	
     $content = "<div class=\"verstka-article\">{$post->post_vms_content}</div>
 		<script type=\"text/javascript\" id=\"verstka-init\">
 		window.onVMSAPIReady = function (api) {
@@ -424,8 +427,8 @@ function apply_vms_content_after($content)
 		};
 
 		var htmls = {
-			desktop: `{$post->post_vms_content}`,
-			mobile: `{$mobile}`,
+			desktop: atob(`{$desktop}`),
+			mobile: atob(`{$mobile}`),
 		};
 		var isMobile = false;
 		var prev = null;
