@@ -588,7 +588,7 @@ function verstka_settings_page()
         'dev_mode'
     ];
 
-    if ($_POST[$hidden_field_name] == 'true') {
+    if (isset($_POST[$hidden_field_name]) && $_POST[$hidden_field_name] == 'true') {
         if ($_POST['confirm']) {
             foreach ($settings_names as $name) {
                 if (!empty($_POST[$name])) {
