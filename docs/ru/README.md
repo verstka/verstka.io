@@ -1,9 +1,9 @@
 # Quick links
 
 [PHP SDK](https://github.com/verstka/php-sdk)<br>
-[JavaScript SDK](https://github.com/verstka/verstka-js-sdk)<br>
-[🇬🇧English language](https://github.com/verstka/verstka.io/tree/master)
-
+[Wordpress Plugin](https://github.com/verstka/vms_wordpress)<br>
+[🇬🇧English language](https://github.com/verstka/verstka.io/tree/master)<br>
+[JavaScript SDK](https://github.com/verstka/verstka-js-sdk) (deprecated)<br>
 
 
 # Verstka API
