@@ -63,6 +63,10 @@ function verstka_init()
     } else {
         die('Error adding VMS cloumns into db');
     }
+
+    if (null !== get_option('dev_mode', null)) {
+        delete_option('dev_mode');
+    }
 }
 
 /*
@@ -173,9 +177,7 @@ function my_admin_print_footer_scripts()
 {
     $post = get_post();
     if (is_object($post)) {
-        $vms_content = $post->post_vms_content;
-
-        $is_dev_mode = get_option('dev_mode') == 'on' ? true : false; ?>
+        $vms_content = $post->post_vms_content; ?>
         <script>
           var settings = {
               'api_key': '<?php echo get_option('api_key'); ?>',
@@ -390,7 +392,7 @@ function my_admin_print_footer_scripts()
 
         </script>
 
-        <script src="//<?php echo $is_dev_mode ? 'dev' : 'go'; ?>.verstka.org/sdk/v3.js?<?php echo rand(1000, 9999); ?>"></script>
+        <script src="//go.r1.verstka.org/sdk/v3.js?"></script>
         <?php
     }
 }
@@ -478,11 +480,10 @@ function apply_vms_content_after($content)
 */
 add_action('wp_head', 'add_this_script_footer');
 function add_this_script_footer()
-{
-    $is_dev_mode = get_option('dev_mode') == 'on' ? true : false; ?>
+{ ?>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="//<?php echo $is_dev_mode ? 'dev' : 'go'; ?>.verstka.org/api.js" async type="text/javascript"></script>
+    <script src="//go.r1.verstka.org/api.js" async type="text/javascript"></script>
 
     <?php
 }
@@ -585,7 +586,6 @@ function verstka_settings_page()
         'api_key',
         'images_source',
         'images_dir',
-        'dev_mode'
     ];
 
     if (isset($_POST[$hidden_field_name]) && $_POST[$hidden_field_name] == 'true') {
@@ -599,10 +599,6 @@ function verstka_settings_page()
             foreach ($settings_names as $name) {
                 delete_option($name);
             }
-        } elseif ($_POST['dev_mode_off']) {
-            update_option('dev_mode', 'off');
-        } elseif ($_POST['dev_mode_on']) {
-            update_option('dev_mode', 'on');
         }
     }
 
@@ -656,14 +652,6 @@ function verstka_settings_page()
                     Images dir: <b><?php echo $settings['images_dir']; ?></b>
                 </p>
                 <input type="submit" name="reset" value="Reset"/>
-
-                <?php if ($settings['dev_mode'] == 'on') { ?>
-                    <input type="submit" name="dev_mode_off" value="Turn off developer mode"/>
-                <?php } else { ?>
-                    <input type="submit" name="dev_mode_on" value="Turn on developer mode"/>
-                <?php } ?>
-                <input type="text" hidden="hidden" name="dev_mode"
-                       value="<?php echo ($settings['dev_mode'] == 'on') ? 'on' : 'off' ?>">
             </div>
 
         <?php } ?>
